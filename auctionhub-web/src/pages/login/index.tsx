@@ -19,7 +19,7 @@ const Login = () => {
                         <input type="password" name="password" className={styles.input_box} placeholder='Password'/>
                         <input type="submit" value="Login" className={styles.submit_btn}/>
                     </form>
-                    <Link href="/Iforgor">
+                    <Link href="/account/forgot-password">
                         <i><p className={styles.reset_password}>Forgot your password?</p></i>
                     </Link>
                 </aside>
