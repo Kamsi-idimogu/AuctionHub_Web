@@ -1,0 +1,59 @@
+.container{
+    max-width: 1080px;
+    margin: 2rem auto 0;
+}
+
+.container > h1{
+    font-size: 74px;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1;
+}
+
+.container > p {
+    font-size: 26px;
+    font-weight: 400;
+    margin-bottom: 2.4rem;
+}
+
+.container > form {
+    display: flex;
+    flex-direction: column;
+}
+
+.container > form > label {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.container > form > input {
+    width: 255px;
+    height: 35px;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 2.5rem;
+    padding: 0 1rem;
+    font-size: 20px;
+    font-weight: 400;
+    background-color: #D9D9D9;
+}
+
+.container > form > input:focus {
+    outline: none;
+    border: 2px solid #A3F8A1;
+}
+
+.container > form > button {
+    width: 125px;
+    border: none;
+    border-radius: 18px;
+    background-color: #A3F8A1;
+    font-size: 20px;
+    font-weight: 700;
+    color: #000000;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    padding: 0.7rem 1rem;
+}
