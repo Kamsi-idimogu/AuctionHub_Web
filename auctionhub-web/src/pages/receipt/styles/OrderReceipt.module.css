@@ -1,0 +1,48 @@
+.container{
+    max-width: 1080px;
+    margin: 2rem auto 0;
+}
+
+.container > h1{
+    font-size: 74px;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1;
+}
+
+.container > p {
+    font-size: 26px;
+    font-weight: 400;
+    margin-bottom: 2.4rem;
+    max-width: 784px;
+}
+
+.order_details {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2.4rem;
+    gap: 0.5rem;
+}
+
+.order_details > p {
+    font-size: 26px;
+    font-weight: 400;
+}
+
+.item_space {
+    margin-bottom: 2.4rem;
+}
+
+.btn{
+    width: 245px;
+    border: none;
+    border-radius: 18px;
+    background-color: #A3F8A1;
+    font-size: 20px;
+    font-weight: 700;
+    color: #000000;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    padding: 1rem;
+}
