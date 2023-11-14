@@ -1,0 +1,6 @@
+.btn{
+    text-align: center;
+}
+.btn:hover{
+    cursor: pointer;
+}
