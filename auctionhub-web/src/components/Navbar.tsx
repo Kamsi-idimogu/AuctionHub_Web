@@ -11,7 +11,7 @@ const Navbar = () => {
         <nav className={styles.navbar}>
             <section className={styles.left_component}>
                 <Link href="/"><h1 className={styles.logo}>Auction Hub</h1></Link>
-                <input type="text" placeholder="Search..." />
+                {isLogged && <input type="text" placeholder="Search..." /> }
             </section>
             {isLogged ? (
                 <section className={styles.right_component}>
