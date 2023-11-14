@@ -1,0 +1,21 @@
+.container{
+    max-width: 859px;
+    margin: 3rem auto 0;
+}
+
+.container > h1{
+    font-size: 74px;
+    font-weight: 700;
+    margin-bottom: 1.6rem;
+    line-height: 1;
+    text-align: center;
+}
+
+.container  p, .container li{
+    font-size: 26px;
+}
+
+.container  p{
+    font-weight: 400;
+    margin-bottom: 1.8rem;
+}
