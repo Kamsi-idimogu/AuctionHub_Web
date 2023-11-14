@@ -13,8 +13,8 @@ const TermsAndCondition: React.FC = () => {
             <h1>Terms and Conditions</h1>
             <ol>
                 <li>Introduction</li>
-                <p>These terms and conditions outline the rules and 
-                    regulations for the use of Auction Hub's Website.
+                <p>{`These terms and conditions outline the rules and 
+                    regulations for the use of Auction Hub's Website.`}
                 </p>
 
                 <li>By accessing this website, you accept these terms 
@@ -42,15 +42,15 @@ const TermsAndCondition: React.FC = () => {
                 </p>
 
                 <li>User Content</li>
-                <p>In these terms and conditions, "User Content" shall mean any audio,
+                <p>{`In these terms and conditions, "User Content" shall mean any audio,
                      video, text, images, or other material you choose to display on this
                       website. By displaying it, you grant Auction Hub a non-exclusive 
-                      license to use, reproduce, and edit any of your User Content.
+                      license to use, reproduce, and edit any of your User Content.`}
                 </p>
 
                 <li>No warranties</li>
-                <p>This website is provided "as is," with all faults, and Auction Hub makes 
-                    no express or implied representations or warranties.
+                <p>{`This website is provided "as is," with all faults, and Auction Hub makes 
+                    no express or implied representations or warranties.`}
                 </p>
 
                 <li>Limitation of liability</li>

@@ -48,9 +48,9 @@ const LandingPage = () => {
             <section className={styles.info_section}>
                 <h1>How Does it Work?</h1>
                 <h3>Step 1: Register</h3>
-                <p>Before you can bid, you'll need to create an account. 
+                <p>{`Before you can bid, you'll need to create an account. 
                     Registration is a straightforward process that requires 
-                    you to provide some basic information
+                    you to provide some basic information`}
                 </p>
                 <Button onClick={goToRegisterPage} className={styles.info_btn}><div>join now</div></Button>
                 <h3>Step 2: Explore</h3>
@@ -75,7 +75,7 @@ const LandingPage = () => {
                         <ul>
                             <li>Seller starts with a high asking price</li>
                             <li>Lowers price until a bidder accepts or reserved price is reached</li>
-                            <li>Bidders can't see others' bids and can't adjust their own</li>
+                            <li>{`Bidders can't see others' bids and can't adjust their own`}</li>
                             <li>An item is removed if there are no buyers after the lowest price or fixed time is reached</li>
                         </ul>
                     </div>
@@ -88,8 +88,8 @@ const LandingPage = () => {
                 </p>
                 <h3>Step 5: Win and Payment</h3>
                 <p>
-                    When the auction timer runs out and you have the highest bid,
-                    congratulations! You've won the auction.
+                    {`When the auction timer runs out and you have the highest bid,
+                    congratulations! You've won the auction.`}
                 </p>
                 <Button onClick={handleAuctionButtonClick} className={styles.info_btn}><div>start bidding now</div></Button>
             </section>

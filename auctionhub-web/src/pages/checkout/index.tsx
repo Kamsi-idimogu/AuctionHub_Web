@@ -11,7 +11,7 @@ const Checkout = () => {
             <div className={styles.container}>
                 <h1>Winner!</h1>
                 <p><b>Congratulations John, </b> You have won the auction 
-                for the "Smart Watch", please fill in your payment information
+                for the {`"Smart Watch"`}, please fill in your payment information
                 </p>
                 <div className={styles.checkout_details}>
                     <section className={styles.shipping_payment}>
