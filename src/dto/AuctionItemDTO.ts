@@ -12,6 +12,6 @@ export type AuctionItem = {
     auctionStatus?: AuctionStatus;
 }
 
-export type AuctionType =  "Dutch" | "Forward";
+export type AuctionType =  "Dutch" | "Forward" | "Unset";
 
 export type AuctionStatus = "Open" | "Closed" | "Cancelled";
