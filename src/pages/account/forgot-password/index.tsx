@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 const ForgotPassword = () => {
     return (
         <div className={inter.className}>
-            <nav className={styles.nav}><h3>Auction Hub</h3></nav>
+            <nav className={styles.nav}><Link href="/" style={{width: "max-content"}}><h3>Auction Hub</h3></Link></nav>
 
             <div className={styles.container}>
                 <h1>Forgot your Password?</h1>

@@ -33,6 +33,7 @@
     font-weight: 400;
     color: #000000;
     margin-bottom: 0.5rem;
+    cursor: pointer;
 }
 
 .auctions_section > h1{

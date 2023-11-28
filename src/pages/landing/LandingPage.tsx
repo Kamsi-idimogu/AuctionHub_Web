@@ -17,6 +17,10 @@ const LandingPage = () => {
         }
     }
 
+    const goToAuctionsPage = () => {
+        window.location.href = "/auctions";
+    }
+
     const goToRegisterPage = () => {
         window.location.href = "/register";
     }
@@ -43,7 +47,7 @@ const LandingPage = () => {
                         )
                     })}
                 </div>
-                <Button onClick={handleAuctionButtonClick} className={styles.featured_btn}><div>view more</div></Button>
+                <Button onClick={goToAuctionsPage} className={styles.featured_btn}><div>view more</div></Button>
             </section>
             <section className={styles.info_section}>
                 <h1>How Does it Work?</h1>
