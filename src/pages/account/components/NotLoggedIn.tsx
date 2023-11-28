@@ -2,6 +2,7 @@ import React from 'react'
 import styles from '../styles/Account.module.css'
 import Link from 'next/link'
 import Button from '@/components/Button'
+import Image from 'next/image'
 
 const NotLoggedIn = () => {
 
@@ -15,9 +16,13 @@ const NotLoggedIn = () => {
 
     return (
         <div className={styles.page}>
-        <div className={styles.image_placeholder}/>
+        <div className={styles.image_container}>
+            <Image src={"/images/banner.png"} alt="banner" width={713} height={1024} />
+        </div>
         <section className={styles.text_container}>
-            <h3 className={styles.header}>Auction Hub</h3> 
+            <Link href="/" style={{width: 'max-content'}}>
+                <h3 className={styles.header}>Auction Hub</h3> 
+            </Link>
             <aside>
                 <h1 className={styles.title}>Welcome to Auction Hub</h1>
                 <p className={styles.text}>

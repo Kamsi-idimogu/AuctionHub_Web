@@ -1,0 +1,105 @@
+.profileContainer {
+    max-width: 1080px;
+    margin: 0 auto;
+    /* padding: 20px; */
+    font-family: Arial, sans-serif;
+    padding-bottom: 5rem;
+  }
+  
+  .profileContainer h2 {
+    font-size: 4.6rem;
+    margin: 3rem 0 2.1rem;
+    font-weight: 700;
+    color: #000000;
+    line-height: 110%;
+  }
+  
+  .gridContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 4rem;
+  }
+  
+  .gridItem {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  
+  .gridItemSingle {
+    grid-column: span 4;
+  }
+
+  .gridItemTitle{
+    font-size: 1.24rem;
+    font-weight: 700;
+  }
+
+  .gridItemText{
+    font-size: 1.24rem;
+    font-weight: 400;
+  }
+
+  .itemContainer{
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .editIcon{
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+  }
+
+  .watchlistTitle {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: space-between;
+  }
+
+  .watchlistLegend {
+    display: flex;
+    gap: 3rem;
+  }
+
+  .watchlistTitle > h3 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #000000;
+    line-height: 110%;
+  }
+
+  .watchlistLegendItem{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .watchlistLegendColor{
+    width: 1.1875rem;
+    height: 1.1875rem;
+    flex-shrink: 0;
+  }
+
+  .watchlistLegendText{
+    color: #000;
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .gridContainer {
+      grid-template-columns: 1fr;
+    }
+    .gridItem,
+    .gridItemSingle {
+      grid-column: span 1;
+    }
+  }
+  
