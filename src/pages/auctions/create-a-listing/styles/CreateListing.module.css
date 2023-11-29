@@ -39,6 +39,10 @@
     border: 2px solid #A3F8A1;
 }
 
+.short_input.error, .description_input.error, .dropdown.error{
+    border: 2px solid red;
+}
+
 .description_input{
     width: 578px;
     height: 212px;
@@ -49,6 +53,7 @@
     font-size: 20px;
     resize: vertical; /* This allows users to resize the textarea vertically */
     overflow: auto; /* Ensures text goes to a new line and scrollbars appear if needed */
+    font-family: 'Inter', sans-serif;
 }
 .description_input::placeholder{
     color: #000000;
@@ -76,11 +81,17 @@
     display: flex;
     gap: 3rem;
 }
+.upload_button{
+    width: 10.5rem;
+}
+.save_button{
+    width: 14.5rem;
+}
 
 .upload_button, .save_button{
     display: flex;
     flex-direction: column;
-    height: 60px;
+    height: 3.75rem;
     font-size: 1.2rem;
     text-transform: uppercase;
     font-weight: 700;
@@ -89,7 +100,7 @@
     margin-bottom: 1.5rem;
     align-items: center;
     justify-content: center;
-    padding: 1.1rem 1.5rem;
+    /* padding: 1.1rem 1.5rem; */
     cursor: pointer;
 }
 .upload_button.active{
@@ -104,4 +115,16 @@
 .save_button.active{
     background-color: #ffffff;
     border: 5px solid #A3F8A1;
+}
+
+.error_label{
+    color: red;
+    font-size: 1.2rem;
+    font-style: italic;
+    visibility: hidden;
+    padding-bottom: 1rem;
+}
+
+.error_label.show_error{
+    visibility: visible;
 }

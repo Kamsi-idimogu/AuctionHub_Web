@@ -24,6 +24,14 @@ const AuctionCard = ({ auction }:AuctionCardProps) => {
 
     const truncatedDescription = truncateText(auction.description, 20);
 
+    const handleCategoryClick = (auction_type: string) => {
+        const currentQuery = { ...router.query, auction_type };
+        router.push({
+            pathname: '/auctions',
+            query: currentQuery,
+        });
+    }
+
     return (
         <div className={styles.auction_card}>
             <div className={styles.auction_image}>
@@ -37,7 +45,7 @@ const AuctionCard = ({ auction }:AuctionCardProps) => {
                 <div className={styles.auction_description}>
                     <p className={styles.auction_description_text}>{truncatedDescription}</p>
             
-                    <p>Auction Type: <span style={{color: "#13B8FF", cursor: "pointer"}}>{auction.auctionType}</span></p>
+                    <p>Auction Type: <span style={{color: "#13B8FF", cursor: "pointer"}} onClick={() => handleCategoryClick(auction.auctionType)}>{auction.auctionType}</span></p>
                 </div>
                 <div className={styles.auction_time_and_bid}>
                     <div className={styles.auction_buttons}>
