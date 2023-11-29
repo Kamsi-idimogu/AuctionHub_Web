@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { Inter } from 'next/font/google'
 import Navbar from '@/components/Navbar';

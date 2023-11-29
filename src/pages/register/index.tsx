@@ -35,6 +35,13 @@ const SignUp = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
+    const toggleIsSeller = () => {
+        setFormData(prevState => ({
+            ...prevState,
+            isSeller: !prevState.isSeller
+        }));
+    }
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prevState => ({
@@ -179,7 +186,7 @@ const SignUp = () => {
                             </div>
                         </div>
                         <label className={styles.signup_checkbox}>
-                           <input type="checkbox" name="isSeller" checked={formData.isSeller} onChange={handleChange}/>
+                           <input type="checkbox" name="isSeller" checked={formData.isSeller} onChange={toggleIsSeller}/>
                            Sign up as a Seller
                          </label>
                         <AsyncButton onClick={handleSubmit} className={styles.submit_btn} isLoading={isLoading}>join now</AsyncButton>

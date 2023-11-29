@@ -1,0 +1,96 @@
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    z-index: 20;
+    border-radius: 5px;
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 80vw;
+    max-width: 1000px;
+}
+
+.closeButton {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 2.5rem;
+    cursor: pointer;
+}
+
+/* .bidHistoryTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bidHistoryTable th,
+.bidHistoryTable td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+.bidHistoryTable th {
+    background-color: #f2f2f2;
+} */
+
+.bidHistoryTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px; 
+}
+
+.bidHistoryTable th,
+.bidHistoryTable td {
+    padding: 8px;
+    text-align: left;
+}
+
+.bidHistoryTable th {
+    background-color: #f2f2f2;
+}
+
+/* Remove all cell borders by default */
+.bidHistoryTable td,
+.bidHistoryTable th {
+    border: none;
+}
+
+/* Apply border only to the bottom of the table row */
+.bidHistoryTable tr {
+    border-bottom: 1px solid black;
+}
+
+/* Apple border to the top of the first row */
+.bidHistoryTable tr:first-child {
+    border-top: 1px solid black;
+}
+
+/* Apply borders to the header and first row to simulate column separation */
+.bidHistoryTable th:first-child,
+.bidHistoryTable td:first-child {
+    border-left: 1px solid black;
+}
+
+.bidHistoryTable th:last-child,
+.bidHistoryTable td:last-child {
+    border-right: 1px solid black;
+}
+
+/* Add border top for the first row to separate from the header */
+.bidHistoryTable tbody tr:first-child td {
+    border-top: 1px solid black;
+}
