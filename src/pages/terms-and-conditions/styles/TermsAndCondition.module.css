@@ -1,6 +1,7 @@
 .container{
     max-width: 859px;
-    margin: 3rem auto 0;
+    margin: 5rem auto 0;
+    padding-bottom: 10rem;
 }
 
 .container > h1{

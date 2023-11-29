@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import styles from './AuctionItemPage.module.css'
 import Button from '@/components/Button';
+import BidHistoryModal from './BidHistoryModal';
 
 const inter = Inter({ subsets: ['latin'], weight: ["400", "500", "600", "700", "800", "900"] })
 
@@ -14,6 +15,11 @@ const AuctionItemPage = () => {
     const router = useRouter();
     const { auction_id } = router.query;
     const [auctionItem, setAuctionItem] = useState<AuctionItem>(auctions[1]);
+    const [showBidHistory, setShowBidHistory] = useState<boolean>(false);
+
+    const toggleBidHistory = () => {
+        setShowBidHistory(prevState => !prevState);
+    }
 
     useEffect(() => {
         if (auction_id) {
@@ -23,9 +29,25 @@ const AuctionItemPage = () => {
         }
     }, [auction_id]);
 
+    const bidHistory = [
+        {bidder: "Ken Carson", bid: 135, time: "14:45:34"},
+        {bidder: "Jack Frost", bid: 130, time: "14:40:12"},
+        {bidder: "Ken Carson", bid: 120, time: "14:35:30"},
+        {bidder: "Ryan", bid: 105, time: "14:34:50"},
+        {bidder: "John Doe", bid: 100, time: "14:34:34"},
+    ];
+
+    const NavigateToTerms = () => {
+        router.push(`/terms-and-conditions`)
+    }
+
     return (
         <div className={inter.className}>
             <Navbar />
+
+            {showBidHistory && (
+                <BidHistoryModal onClose={toggleBidHistory} bidHistory={bidHistory} />
+            )}
 
             <div className={styles.container}>
                 <div className={styles.image_container}>
@@ -45,9 +67,9 @@ const AuctionItemPage = () => {
                             <button type="submit" className={styles.bid_button}>Bid</button>
                         </div>
 
-                        <Button onClick={()=>{}} className={styles.bid_history_btn}><div>bid history</div></Button>
+                        <Button onClick={toggleBidHistory} className={styles.bid_history_btn}><div>bid history</div></Button>
                     </section>
-                    <div className={styles.shipping_and_tax}>Shipping & Tax</div>
+                    <div className={styles.shipping_and_tax} onClick={NavigateToTerms}>Shipping & Tax</div>
                 </section>
             </div>
         </div>
