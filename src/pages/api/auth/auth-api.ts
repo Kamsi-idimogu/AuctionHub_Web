@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LOGIN_ENPOINT, REGISTER_ENDPOINT } from "../endpoints";
+import { LOGIN_ENPOINT, LOGOUT_ENDPOINT, REGISTER_ENDPOINT } from "../endpoints";
 import { errorHandler } from "../error_handler";
 
 export const userRegistration = async (formData: any): Promise<payload> => {
@@ -41,6 +41,23 @@ export const userLogin = async (formData: any): Promise<payload> => {
     };
 
     const resp = await axios.post(LOGIN_ENPOINT, { ...userPayload });
+
+    console.log("response:", resp);
+
+    return {
+      status: resp.data.status || "success",
+      message: resp.data.message,
+      data: resp.data.data,
+    };
+  } catch (error: any) {
+    console.log("error:", error);
+    return errorHandler(error);
+  }
+};
+
+export const userLogout = async (): Promise<payload> => {
+  try {
+    const resp = await axios.post(LOGOUT_ENDPOINT);
 
     console.log("response:", resp);
 
