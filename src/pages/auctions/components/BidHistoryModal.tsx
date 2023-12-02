@@ -7,7 +7,7 @@ type BidHistoryModalProps = {
     bidHistory: Array<{ bidder: string; bid: number; time: string }>;
 };
 
-const BidHistoryModal: React.FC<BidHistoryModalProps> = ({ onClose, bidHistory }) => {
+const BidHistoryModal: React.FC<BidHistoryModalProps> = ({ onClose, bidHistory = [] }) => {
     return (
         <>
             <div className={styles.backdrop} onClick={onClose} />
@@ -23,7 +23,7 @@ const BidHistoryModal: React.FC<BidHistoryModalProps> = ({ onClose, bidHistory }
                         </tr>
                     </thead>
                     <tbody>
-                        {bidHistory.map((entry, index) => (
+                        {bidHistory && bidHistory.map((entry, index) => (
                             <tr key={index}>
                                 <td>{entry.bidder}</td>
                                 <td>${entry.bid}</td>
