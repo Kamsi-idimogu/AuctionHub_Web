@@ -16,6 +16,7 @@ const AuctionItemPage = () => {
     const { auction_id } = router.query;
     const [auctionItem, setAuctionItem] = useState<AuctionItem>(auctions[1]);
     const [showBidHistory, setShowBidHistory] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>("")
 
     const toggleBidHistory = () => {
         setShowBidHistory(prevState => !prevState);
@@ -70,6 +71,7 @@ const AuctionItemPage = () => {
                         <Button onClick={toggleBidHistory} className={styles.bid_history_btn}><div>bid history</div></Button>
                     </section>
                     <div className={styles.shipping_and_tax} onClick={NavigateToTerms}>Shipping & Tax</div>
+                    <label className={`${styles.error_label} ${errorMessage && styles.active}`}>{errorMessage || "Error occured while placing bid"}</label>
                 </section>
             </div>
         </div>

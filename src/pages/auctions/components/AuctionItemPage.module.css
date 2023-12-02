@@ -110,3 +110,15 @@
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
+.error_label{
+    margin-top: 5rem;
+    color: red;
+    font-size: 1.2rem;
+    font-style: italic;
+    visibility: hidden;
+}
+
+.error_label.active{
+    visibility: visible;
+}

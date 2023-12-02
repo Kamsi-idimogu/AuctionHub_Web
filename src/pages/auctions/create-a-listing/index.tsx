@@ -7,7 +7,9 @@ const inter = Inter({ subsets: ['latin'], weight: ["400", "500", "600", "700", "
 
 const CreateListingPage: React.FC = () => {
     return (
-        <CreateListing />
+        <div className={inter.className}>
+            <CreateListing />
+        </div>
     );
 }
 
