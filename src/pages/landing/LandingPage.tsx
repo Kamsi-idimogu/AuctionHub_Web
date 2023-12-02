@@ -1,19 +1,21 @@
-import { useState } from 'react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Button from '@/components/Button';
 import styles from './styles/LandingPage.module.css';
 import AuctionCard from '@/components/AuctionCard';
 import { auctions } from '../api/auction_item_dummy_data';
+import { useAuth } from '@/contexts/authContext';
+import { useRouter } from 'next/router';
 
 const LandingPage = () => {
-    const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false);
+    const { isLoggedIn } = useAuth();
+    const router = useRouter();
     
     const handleAuctionButtonClick = () => {
-        if (isUserLoggedIn) {
-            window.location.href = "/auctions";
+        if (isLoggedIn) {
+            router.push("/auctions");
         } else {
-            window.location.href = "/login";       
+            router.push("/account");
         }
     }
 

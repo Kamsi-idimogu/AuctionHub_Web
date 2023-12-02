@@ -7,10 +7,12 @@ import { Inter } from "next/font/google";
 import AsyncButton from "@/components/AsyncButton";
 import router from "next/router";
 import { userLogin } from "../api/auth/auth-api";
+import { useAuth } from "@/contexts/authContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const Login = () => {
+  const { isLoggedIn, login } = useAuth();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -40,6 +42,10 @@ const Login = () => {
         setTimeout(() => {
           setIsLoading(false);
           clearAllData();
+
+          // this is temporary, it will change in the soon future
+          login(username, password);
+
           router.push(`/account/profile`);
         }, 3000);
 
@@ -80,19 +86,15 @@ const Login = () => {
 
   const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
-    console.log(username);
   };
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    console.log(password);
   };
-
-  const user = null;
 
   useEffect(() => {
     // redirect to profile page if user is logged in
-    if (user) {
+    if (isLoggedIn) {
       router.push(`/account/profile`);
     }
   }, []);
