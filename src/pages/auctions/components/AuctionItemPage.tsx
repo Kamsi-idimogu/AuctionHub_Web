@@ -8,6 +8,9 @@ import Navbar from '@/components/Navbar';
 import styles from './AuctionItemPage.module.css'
 import Button from '@/components/Button';
 import BidHistoryModal from './BidHistoryModal';
+import { EpochToDateTime } from '@/utils/dateTime';
+import AsyncButton from '@/components/AsyncButton';
+import { viewBiddingHistory } from '@/pages/api/bidder/bidder-api';
 
 const inter = Inter({ subsets: ['latin'], weight: ["400", "500", "600", "700", "800", "900"] })
 
@@ -16,10 +19,40 @@ const AuctionItemPage = () => {
     const { auction_id } = router.query;
     const [auctionItem, setAuctionItem] = useState<AuctionItem>(auctions[1]);
     const [showBidHistory, setShowBidHistory] = useState<boolean>(false);
+    const [isBidHistoryLoading, setIsBidHistoryLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("")
 
-    const toggleBidHistory = () => {
-        setShowBidHistory(prevState => !prevState);
+    const toggleBidHistory = async () => {
+        if (showBidHistory) {
+            setShowBidHistory(false);
+            return;
+        }
+        setIsBidHistoryLoading(true);
+        if (typeof auction_id !== "string") return;
+
+        let resp: any;
+
+        try {
+            resp = await viewBiddingHistory(parseInt(auction_id));
+
+            if (resp?.status === "failed") {
+                alert("Error occured while fetching bid history. Please try again later.");
+                return;
+            }
+
+            if (resp?.status === false) return;
+
+            // setBidHistory(resp?.data)
+            setShowBidHistory(true);
+        }
+        catch (error) {
+            console.log(error);
+            setErrorMessage("Error occured while fetching bid history. Please try again later.")
+        }
+        finally {
+            setIsBidHistoryLoading(false);
+        }
+        
     }
 
     useEffect(() => {
@@ -30,13 +63,13 @@ const AuctionItemPage = () => {
         }
     }, [auction_id]);
 
-    const bidHistory = [
+    const [bidHistory, setBidHistory] = useState([
         {bidder: "Ken Carson", bid: 135, time: "14:45:34"},
         {bidder: "Jack Frost", bid: 130, time: "14:40:12"},
         {bidder: "Ken Carson", bid: 120, time: "14:35:30"},
         {bidder: "Ryan", bid: 105, time: "14:34:50"},
         {bidder: "John Doe", bid: 100, time: "14:34:34"},
-    ];
+    ]);
 
     const NavigateToTerms = () => {
         router.push(`/terms-and-conditions`)
@@ -68,7 +101,7 @@ const AuctionItemPage = () => {
                             <button type="submit" className={styles.bid_button}>Bid</button>
                         </div>
 
-                        <Button onClick={toggleBidHistory} className={styles.bid_history_btn}><div>bid history</div></Button>
+                        <AsyncButton isLoading={isBidHistoryLoading} onClick={toggleBidHistory} className={styles.bid_history_btn}><div>bid history</div></AsyncButton>
                     </section>
                     <div className={styles.shipping_and_tax} onClick={NavigateToTerms}>Shipping & Tax</div>
                     <label className={`${styles.error_label} ${errorMessage && styles.active}`}>{errorMessage || "Error occured while placing bid"}</label>

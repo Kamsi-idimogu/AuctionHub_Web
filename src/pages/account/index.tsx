@@ -1,25 +1,24 @@
 import { useEffect } from 'react'
 import { Inter } from 'next/font/google'
-import { user } from '../api/user_dummy_data'
 import router from 'next/router'
 import NotLoggedIn from "./components/NotLoggedIn"
-import { useAuth } from '@/contexts/authContext'
 import styles from './styles/Account.module.css'
 import LoadingIndicator from '@/components/LoadingIndicator'
+import { useAuthStore } from '@/store/authStore'
 
 const inter = Inter({ subsets: ['latin'] })
 
 const Account = () => {
-    const { isLoggedIn } = useAuth()
+  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
 
     useEffect(() => {
         // redirect to profile page if user is logged in
-        if (isLoggedIn) {
+        if (isLoggedIn()) {
             router.push(`/account/profile`)
         }
     }, [])
 
-    if (!isLoggedIn) {
+    if (!isLoggedIn()) {
         return (
             <div className={inter.className}>
                 <NotLoggedIn />

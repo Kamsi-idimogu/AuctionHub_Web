@@ -45,10 +45,10 @@ const ListingCard = ({ auction, backgroundColor, wantTime = true }:ListingCardPr
                     <div className={styles.auction_buttons}>
                         <Button onClick={handleSelect} className={styles.select_btn}><div>select</div></Button>
                     </div>
-                    {/* <div className={styles.auction_buttons}>
+                    {auction.auctionStatus === "Draft" && <div className={styles.auction_buttons}>
                         <Button onClick={handleSelect} className={styles.select_btn}><div>upload</div></Button>
                         <Button onClick={()=>{}} className={styles.watchlist_btn}><div>edit</div></Button>
-                    </div> */}
+                    </div> }
                     <p style={wantTime ? {visibility: 'visible'} : {visibility: 'hidden'}}>Remaining Time: <span style={{color: "#FF5454"}}>00:33:11</span></p>
                 </div>
             </div>

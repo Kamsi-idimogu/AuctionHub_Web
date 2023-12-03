@@ -7,6 +7,7 @@ import { AuctionItem } from '@/dto';
 import { auctions } from '@/pages/api/auction_item_dummy_data';
 import router from 'next/router';
 import AsyncButton from '@/components/AsyncButton';
+import { createListing } from '@/pages/api/seller/seller-api';
 
 const inter = Inter({ subsets: ['latin'], weight: ["400", "500", "600", "700", "800", "900"] })
 
@@ -26,7 +27,10 @@ const CreateListing = ({ editAuctionId }:CreateListingProps) => {
         auctionType: "Unset",
         auctionStartTime: new Date(),
         auctionEndTime: new Date(),
-        auctionStatus: "Open"
+        auctionStatus: "Draft",
+        keyword1: "",
+        keyword2: "",
+        keyword3: "",
     });
 
     const [auctionImage, setAuctionImage] = useState<File | null>(null);
@@ -35,9 +39,9 @@ const CreateListing = ({ editAuctionId }:CreateListingProps) => {
         name: "",
         description: "",
         auctionType: "",
-        category1: "",
-        category2: "",
-        category3: "",
+        keyword1: "",
+        keyword2: "",
+        keyword3: "",
         startingPrice: "", // only for forward auctions
         duration: "", // only for dutch auctions
         decrementValue: "", // only for dutch auctions
@@ -50,9 +54,9 @@ const CreateListing = ({ editAuctionId }:CreateListingProps) => {
         auctionType: "",
         duration: "",
         decrementValue: "",
-        category1: "",
-        category2: "",
-        category3: ""
+        keyword1: "",
+        keyword2: "",
+        keyword3: ""
     })
     const [displayErrorMessage, setDisplayErrorMessage] = useState<string>("")
 
@@ -128,9 +132,9 @@ const CreateListing = ({ editAuctionId }:CreateListingProps) => {
             name: formData.name === "" ? "Name is required" : "",
             description: formData.description === "" ? "Description is required" : "",
             auctionType: (formData.auctionType === "" || formData.auctionType === "Unset") ? "Auction Type is required" : "",
-            category1: (formData.category1 === "" || formData.category1 === "category") ? "Category 1 is required" : "",
-            category2: (formData.category2 === "" || formData.category2 ==="category" )? "Category 2 is required" : "",
-            category3: (formData.category3 === "" || formData.category3 === "category") ? "Category 3 is required" : "",
+            keyword1: (formData.keyword1 === "" || formData.keyword1 === "category") ? "Keyword 1 is required" : "",
+            keyword2: (formData.keyword2 === "" || formData.keyword2 ==="category" )? "Keyword 2 is required" : "",
+            keyword3: (formData.keyword3 === "" || formData.keyword3 === "category") ? "Keyword 3 is required" : "",
             startingPrice: formData.auctionType === "Forward" ? formData.startingPrice === "" ? "Starting Price is required" : validateNumberInput(formData.startingPrice) ? "" :  "Starting Price must be a whole number greater than 0" : "",
             decrementValue: formData.auctionType === "Dutch" ? formData.decrementValue === "" ? "Decrement Value is required" : validateNumberInput(formData.decrementValue) ? "" :  "Decrement Value must be a whole number greater than 0" : "",
             duration: formData.auctionType === "Dutch" ? formData.duration === "" ? "Duration is required" : validateNumberInput(formData.duration) ? "" :  "Duration must be provided in hours and greater than 0" : "",
@@ -156,9 +160,9 @@ const CreateListing = ({ editAuctionId }:CreateListingProps) => {
             name: "",
             description: "",
             auctionType: "",
-            category1: "",
-            category2: "",
-            category3: "",
+            keyword1: "",
+            keyword2: "",
+            keyword3: "",
             startingPrice: "",
             duration: "", 
             decrementValue: "", 
@@ -170,43 +174,76 @@ const CreateListing = ({ editAuctionId }:CreateListingProps) => {
             auctionType: "",
             duration: "",
             decrementValue: "",
-            category1: "",
-            category2: "",
-            category3: ""
+            keyword1: "",
+            keyword2: "",
+            keyword3: ""
         });
         setDisplayErrorMessage("");
     }
 
-    // function to handle communication with backend
-    const handleCreateListingAttempt = () => {
-        clearAllData();
-
-        alert("Communication with server is yet to be integrated, but the Listing has been created! You will be redirected to your profile page in 5 seconds");
-
-        // redirect to login page
-        setTimeout(() => {
-            router.push(`/account/profile`)
-        }, 5000);
-
+    const convertDurationToEpoch = (hours: string) => {
+        const hoursInt = parseInt(hours);
+        const epoch = new Date().getTime();
+        const duration = hoursInt * 60 * 60 * 1000;
+        return epoch + duration;
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (validateForm()) {
             setIsSubmitLoading(true);
-            setTimeout(() => {
-                handleCreateListingAttempt();
+            let resp: any;
+
+            try {
+                formData.duration = convertDurationToEpoch(formData.duration).toString();
+                resp = await createListing(formData);
+                // call to server to get auction item by id
+                // start the obtained auction 
+                
+                if (resp === undefined) {
+                    alert("Something went wrong. Please try again later");
+                    return;
+                }
+
+                if (resp.status === "failed") {
+                    alert("Error creating listing. Please try again later.");
+                    return;
+                }
+                clearAllData();
+                router.push(`/account/profile`);
+            } catch (error) {
+                console.log(error);
+                setDisplayErrorMessage("Server error occured. Please try again later")
+            } finally {
                 setIsSubmitLoading(false);
-            }, 3000);
+            }
         }
     }
 
-    const handleSaveDraft = () => {
+    const handleSaveDraft = async () => {
         if (validateForm()) {
             setIsSaveDraftLoading(true);
-            setTimeout(() => {
-                handleCreateListingAttempt();
+            let resp: any;
+
+            try {
+                formData.duration = convertDurationToEpoch(formData.duration).toString();
+                resp = await createListing(formData);
+                if (resp === undefined) {
+                    alert("Something went wrong. Please try again later");
+                    return;
+                }
+
+                if (resp.status === "failed") {
+                    alert("Error creating listing. Please try again later.");
+                    return;
+                }
+                clearAllData();
+                router.push(`/account/profile`);
+            } catch (error) {
+                console.log(error);
+                setDisplayErrorMessage("Server error occured. Please try again later")
+            } finally {
                 setIsSaveDraftLoading(false);
-            }, 3000);
+            }
         }
     }  
 
@@ -227,28 +264,10 @@ const CreateListing = ({ editAuctionId }:CreateListingProps) => {
                 </section>
                 <section className={styles.bottom_section}>
                     <div className={styles.dropdown_container}>
-                        {/* TODO: UPDATE THE VALUE OF AUCTIONITEM WHEN THE DROPDOWN VALUE CHANGES */}
-                        <select name="category1" className={`${styles.dropdown} ${errorMessages.category1 && styles.error}`} value={formData.category1} onChange={handleDropdownChange}>
-                            <option value="category">Category 1</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="clothing">Clothing</option>
-                            <option value="furniture">Furniture</option>
-                            <option value="other">Other</option>
-                        </select>
-                        <select name="category2" className={`${styles.dropdown} ${errorMessages.category2 && styles.error}`} value={formData.category2} onChange={handleDropdownChange}>
-                            <option value="category">Category 2</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="clothing">Clothing</option>
-                            <option value="furniture">Furniture</option>
-                            <option value="other">Other</option>
-                        </select>
-                        <select name="category3" className={`${styles.dropdown} ${errorMessages.category3 && styles.error}`} value={formData.category3} onChange={handleDropdownChange}>
-                            <option value="category">Category 3</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="clothing">Clothing</option>
-                            <option value="furniture">Furniture</option>
-                            <option value="other">Other</option>
-                        </select>
+                        <input type="text" name="keyword1" placeholder="Keyword 1" className={`${styles.short_input} ${errorMessages.name && styles.error}`} value={auctionItem.keyword1 || formData.keyword1} onChange={handleChange}/>
+                        <input type="text" name="keyword2" placeholder="Keyword 2" className={`${styles.short_input} ${errorMessages.name && styles.error}`} value={auctionItem.keyword2 || formData.keyword2} onChange={handleChange}/>
+                        <input type="text" name="keyword3" placeholder="Keyword 3" className={`${styles.short_input} ${errorMessages.name && styles.error}`} value={auctionItem.keyword3 || formData.keyword3} onChange={handleChange}/>
+
                         <select name="auctionType" className={`${styles.dropdown} ${errorMessages.auctionType && styles.error}`} value={formData.auctionType} onChange={handleDropdownChange}>
                             <option value="Unset">Auction Type</option>
                             <option value="Forward">Forward</option>

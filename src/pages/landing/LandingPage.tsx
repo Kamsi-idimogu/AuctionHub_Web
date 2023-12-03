@@ -4,15 +4,15 @@ import Button from '@/components/Button';
 import styles from './styles/LandingPage.module.css';
 import AuctionCard from '@/components/AuctionCard';
 import { auctions } from '../api/auction_item_dummy_data';
-import { useAuth } from '@/contexts/authContext';
 import { useRouter } from 'next/router';
+import { useAuthStore } from '@/store/authStore';
 
 const LandingPage = () => {
-    const { isLoggedIn } = useAuth();
+    const isLoggedIn = useAuthStore(state => state.isLoggedIn);
     const router = useRouter();
     
     const handleAuctionButtonClick = () => {
-        if (isLoggedIn) {
+        if (isLoggedIn()) {
             router.push("/auctions");
         } else {
             router.push("/account");
@@ -20,11 +20,11 @@ const LandingPage = () => {
     }
 
     const goToAuctionsPage = () => {
-        window.location.href = "/auctions";
+        router.push("/auctions");
     }
 
     const goToRegisterPage = () => {
-        window.location.href = "/register";
+        router.push("/register");
     }
 
     return (
