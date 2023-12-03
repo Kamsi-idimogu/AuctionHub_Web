@@ -3,6 +3,7 @@ import { AuctionItem } from '@/dto'
 import styles from '@/styles/AuctionCard.module.css'
 import Image from 'next/image'
 import Button from './Button'
+import AsyncButton from './AsyncButton'
 
 interface AuctionCardProps {
     auction: AuctionItem
@@ -50,7 +51,7 @@ const AuctionCard = ({ auction }:AuctionCardProps) => {
                 <div className={styles.auction_time_and_bid}>
                     <div className={styles.auction_buttons}>
                         <Button onClick={handleSelect} className={styles.select_btn}><div>select</div></Button>
-                        {/* <Button onClick={()=>{}} className={styles.watchlist_btn}><div>add to watchlist</div></Button> */}
+                        <AsyncButton isLoading={false} onClick={()=>{}} className={styles.watchlist_btn} loadingSize={20}><div>add to watchlist</div></AsyncButton>
                     </div>
                     <p>Remaining Time: <span style={{color: "#FF5454"}}>00:33:11</span></p>
                 </div>

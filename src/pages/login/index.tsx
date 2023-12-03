@@ -7,12 +7,15 @@ import { Inter } from "next/font/google";
 import AsyncButton from "@/components/AsyncButton";
 import router from "next/router";
 import { userLogin } from "../api/auth/auth-api";
-import { useAuth } from "@/contexts/authContext";
+// import { useAuth } from "@/contexts/authContext";
+import { useAuthStore } from "@/store/authStore";
+import { user } from "../api/user_dummy_data"; // using dummy data for now
 
 const inter = Inter({ subsets: ["latin"] });
 
 const Login = () => {
-  const { isLoggedIn, login } = useAuth();
+  const { isLoggedIn, login } = useAuthStore();
+
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -38,16 +41,19 @@ const Login = () => {
         }
       } catch (error) {
         console.log(error);
+        setErrorMessage("Error occured while logging you in. Please try again later.")
       } finally {
-        setTimeout(() => {
           setIsLoading(false);
+      
+          // vvvv - this will be moved to the try block later (below if statements)
+          const token = resp?.data?.token || "dummy-token";
+          const expiry = 60 // the expiry time in minutes
+          
+          login(user, token, expiry);
+          // ^^^^
+
           clearAllData();
-
-          // this is temporary, it will change in the soon future
-          login(username, password);
-
           router.push(`/account/profile`);
-        }, 3000);
 
         if (resp?.status === false) return;
       }
@@ -94,7 +100,7 @@ const Login = () => {
 
   useEffect(() => {
     // redirect to profile page if user is logged in
-    if (isLoggedIn) {
+    if (isLoggedIn()) {
       router.push(`/account/profile`);
     }
   }, []);

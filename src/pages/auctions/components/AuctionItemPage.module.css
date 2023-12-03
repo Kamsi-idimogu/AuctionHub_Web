@@ -93,13 +93,15 @@
     color: #13B8FF;
     font-weight: 600;
     cursor: pointer;
+    width: max-content;
 }
 
 .bid_history_btn{
     background-color: #fff;
     border-radius: 20px;
     border: 1.5px solid #000;
-    padding: 0.7rem 1.5rem;
+    width: 150px;
+    height: 45px;
     font-size: 14px;
     font-weight: 700;
     color: #000000;
