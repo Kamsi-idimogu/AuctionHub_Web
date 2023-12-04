@@ -367,7 +367,6 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
               <option value="Dutch">Dutch</option>
             </select>
 
-            {/* {formData.auctionType === "Dutch" && ( */}
             <input
               type="text"
               name="duration"
@@ -376,7 +375,6 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
               value={formData.duration}
               onChange={handleChange}
             />
-            {/* )} */}
             {formData.auctionType === "Dutch" && (
               <input
                 type="text"
