@@ -11,7 +11,7 @@ import { io } from "socket.io-client";
 
 export const viewCatalog = async (): Promise<payload> => {
   try {
-    const resp = await axios.get(VIEW_CATALOGUE_ENDPOINT);
+    const resp = await axios.get(VIEW_CATALOGUE_ENDPOINT, { withCredentials: true });
 
     console.log("response:", resp);
 
@@ -28,7 +28,9 @@ export const viewCatalog = async (): Promise<payload> => {
 
 export const searchCatalog = async (searchTerm: string): Promise<payload> => {
   try {
-    const resp = await axios.get(SEARCH_CATALOGUE_ENDPOINT + "?searchkeyword=" + searchTerm);
+    const resp = await axios.get(SEARCH_CATALOGUE_ENDPOINT + "?searchkeyword=" + searchTerm, {
+      withCredentials: true,
+    });
 
     console.log("response:", resp);
 
@@ -45,7 +47,7 @@ export const searchCatalog = async (searchTerm: string): Promise<payload> => {
 
 export const viewWatchList = async (): Promise<payload> => {
   try {
-    const resp = await axios.get(VIEW_WATCHLIST_ENDPOINT);
+    const resp = await axios.get(VIEW_WATCHLIST_ENDPOINT, { withCredentials: true });
 
     console.log("response:", resp);
 
@@ -62,7 +64,9 @@ export const viewWatchList = async (): Promise<payload> => {
 
 export const viewBiddingHistory = async (listing_item_id: number): Promise<payload> => {
   try {
-    const resp = await axios.get(VIEW_BIDDING_HISTORY_ENDPOINT + "/" + listing_item_id);
+    const resp = await axios.get(VIEW_BIDDING_HISTORY_ENDPOINT + "/" + listing_item_id, {
+      withCredentials: true,
+    });
 
     console.log("response:", resp);
 

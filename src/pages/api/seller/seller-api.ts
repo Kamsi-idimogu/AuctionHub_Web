@@ -53,7 +53,7 @@ export const createListing = async (formData: any): Promise<payload> => {
 
 export const viewListing = async (): Promise<payload> => {
   try {
-    const resp = await axios.get(VIEW_LISTING_ENDPOINT);
+    const resp = await axios.get(VIEW_LISTING_ENDPOINT, { withCredentials: true });
 
     console.log("response:", resp);
 
@@ -70,7 +70,9 @@ export const viewListing = async (): Promise<payload> => {
 
 export const startAuction = async (listing_item_id: number): Promise<payload> => {
   try {
-    const resp = await axios.post(START_AUCTION_ENDPOINT + "/" + listing_item_id);
+    const resp = await axios.post(START_AUCTION_ENDPOINT + "/" + listing_item_id, {
+      withCredentials: true,
+    });
 
     console.log("response:", resp);
 

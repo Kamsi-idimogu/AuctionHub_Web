@@ -52,7 +52,11 @@ export const editUserProfile = async (formData: any): Promise<payload> => {
       postal_code: formData.postalCode,
     };
 
-    const resp = await axios.post(EDIT_USER_PROFILE_ENDPOINT, { ...userPayload });
+    const resp = await axios.post(
+      EDIT_USER_PROFILE_ENDPOINT,
+      { ...userPayload },
+      { withCredentials: true }
+    );
 
     console.log("response:", resp);
 
@@ -74,9 +78,15 @@ export const userLogin = async (formData: any): Promise<payload> => {
       password: formData.password,
     };
 
-    const resp = await axios.post(LOGIN_ENPOINT, { ...userPayload });
+    const resp = await axios.post(LOGIN_ENPOINT, { ...userPayload }, { withCredentials: true });
 
     console.log("response:", resp);
+
+    if (resp.headers && resp.headers["set-cookie"]) {
+      console.log("Cookies:", resp.headers["set-cookie"]);
+    } else {
+      console.log("No cookies were set.");
+    }
 
     return {
       status: resp.data.status || "success",
