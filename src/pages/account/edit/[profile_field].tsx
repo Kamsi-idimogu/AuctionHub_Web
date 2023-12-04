@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google';
 import { useRouter } from 'next/router';
 import { user } from '../../api/user_dummy_data';
 import { formatUserAddress } from '@/utils/userAddress';
+import ProtectedComponent from '@/components/ProtectedComponent';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -36,18 +37,20 @@ const EditProfile = () => {
     }
 
     return (    
-        <div className={`${inter.className}`}>
-            <Navbar />
-            <div className={styles.container}>
-                <h1>Edit Profile</h1>
-                <p>Be sure to click the SAVE button when you are done.</p>
-                <EditProfileItem  
-                    profile={user} 
-                    title={getUserField(profile_field).label}
-                    oldValue={getUserField(profile_field).value}
-                />
+        <ProtectedComponent>
+            <div className={`${inter.className}`}>
+                <Navbar />
+                <div className={styles.container}>
+                    <h1>Edit Profile</h1>
+                    <p>Be sure to click the SAVE button when you are done.</p>
+                    <EditProfileItem  
+                        profile={user} 
+                        title={getUserField(profile_field).label}
+                        oldValue={getUserField(profile_field).value}
+                    />
+                </div>
             </div>
-        </div>
+        </ProtectedComponent>
     );
 }
 
