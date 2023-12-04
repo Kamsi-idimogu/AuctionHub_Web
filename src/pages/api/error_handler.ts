@@ -17,8 +17,8 @@ export function errorHandler(error: any) {
   } else {
     // Handle non-Axios errors - Generic errors
     return {
-      status: error.response.data.status || "failed",
-      message: error.response.data.message || "",
+      status: error?.response?.data.status || "failed",
+      message: error?.response?.data.message || "",
       data: null,
     };
   }
