@@ -32,7 +32,6 @@ export const createListing = async (formData: any): Promise<payload> => {
           accept: "application/json",
           "Accept-Language": "en-US,en;q=0.8",
           "content-type": "multipart/form-data",
-          Cookie: "whs=your_cookie_value", //TODO: update this
         },
         withCredentials: true,
       }

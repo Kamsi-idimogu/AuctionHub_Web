@@ -82,12 +82,6 @@ export const userLogin = async (formData: any): Promise<payload> => {
 
     console.log("response:", resp);
 
-    if (resp.headers && resp.headers["set-cookie"]) {
-      console.log("Cookies:", resp.headers["set-cookie"]);
-    } else {
-      console.log("No cookies were set.");
-    }
-
     return {
       status: resp.data.status || "success",
       message: resp.data.message,

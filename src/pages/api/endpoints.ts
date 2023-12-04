@@ -1,4 +1,4 @@
-export const BASE_HTTP_URL = "http://127.0.0.1:7080/api-gateway";
+export const BASE_HTTP_URL = "https://127.0.0.1:7080/api-gateway";
 
 export const BASE_WS_URL = "ws://127.0.0.1:7081";
 
