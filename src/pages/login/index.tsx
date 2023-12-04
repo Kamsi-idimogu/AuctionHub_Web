@@ -39,21 +39,20 @@ const Login = () => {
           alert("Error loggin you in. Please try again later.");
           return;
         }
+
+        const token = resp?.data?.token || "dummy-token";
+
+        const expiry = 60; // the expiry time in minutes
+
+        login(user, token, expiry);
       } catch (error) {
         console.log(error);
-        setErrorMessage("Error occured while logging you in. Please try again later.")
+        setErrorMessage("Error occured while logging you in. Please try again later.");
       } finally {
-          setIsLoading(false);
-      
-          // vvvv - this will be moved to the try block later (below if statements)
-          const token = resp?.data?.token || "dummy-token";
-          const expiry = 60 // the expiry time in minutes
-          
-          login(user, token, expiry);
-          // ^^^^
+        setIsLoading(false);
 
-          clearAllData();
-          router.push(`/account/profile`);
+        clearAllData();
+        router.push(`/account/profile`);
 
         if (resp?.status === false) return;
       }
