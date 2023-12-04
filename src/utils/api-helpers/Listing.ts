@@ -1,4 +1,4 @@
-import { ListingResponse } from "@/pages/api/network-contracts/responses/Listing";
+import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
 
 export const ObtainListingObject = (data: any): ListingResponse => {
     return {

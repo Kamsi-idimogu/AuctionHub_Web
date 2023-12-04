@@ -5,7 +5,9 @@ import { Inter } from "next/font/google";
 import Link from "next/link";
 import router from "next/router";
 import AsyncButton from "@/components/AsyncButton";
-import { userRegistration } from "../api/auth/auth-api";
+import { userLogin, userRegistration } from "../api/auth/auth-api";
+import { CreateUserFromServer } from "@/utils/api-helpers/User";
+import { useAuthStore } from "@/store/authStore";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -88,6 +90,8 @@ const SignUp = () => {
     return Object.values(newErrorMessages).every((x) => x === "");
   };
 
+  const { login } = useAuthStore();
+
   const handleSubmit = async () => {
     if (validateForm()) {
       setIsLoading(true);
@@ -106,14 +110,36 @@ const SignUp = () => {
           alert("You are already registered. Please login to continue");
           return;
         }
+
+        const { username, password } = resp.data;
+
+        // Handle logging in
+        const loginResp: any = await userLogin({ username, password });
+
+        if (loginResp === undefined) {
+          alert("Something went wrong. Please try again later");
+          return;
+        }
+
+        if (loginResp.status === "failed") {
+          alert("Error loggin you in. Please try again later.");
+          return;
+        }
+
+        const user = CreateUserFromServer(loginResp.data);
+
+        const token = resp?.data?.token || "dummy-token";
+
+        const expiry = 60; // the expiry time in minutes
+
+        login(user, token, expiry);
+
+        clearAllData();
+        router.push(`/account/profile`);
       } catch (error) {
         console.log(error);
       } finally {
-        setTimeout(() => {
           setIsLoading(false);
-          clearAllData();
-          router.push(`/`);
-        }, 3000);
 
         if (resp?.status === false) return;
       }

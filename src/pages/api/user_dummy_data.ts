@@ -13,4 +13,6 @@ export const user : User = {
     postal_code: "A1A 1A1",
     city: "Toronto",
     country: "Canada",
+    created_at: "1701663198324",
+    updated_at: null,
 }
