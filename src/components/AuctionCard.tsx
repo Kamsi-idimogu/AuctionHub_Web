@@ -4,6 +4,7 @@ import styles from '@/styles/AuctionCard.module.css'
 import Image from 'next/image'
 import Button from './Button'
 import AsyncButton from './AsyncButton'
+import AuctionCountdown from './AuctionCountdown'
 
 interface AuctionCardProps {
     auction: AuctionItem
@@ -33,6 +34,9 @@ const AuctionCard = ({ auction }:AuctionCardProps) => {
         });
     }
 
+    // const time = Date.now() + 172800000; // 48 hours from now in epoch
+    const time =  1701834593247;
+
     return (
         <div className={styles.auction_card}>
             <div className={styles.auction_image}>
@@ -51,9 +55,9 @@ const AuctionCard = ({ auction }:AuctionCardProps) => {
                 <div className={styles.auction_time_and_bid}>
                     <div className={styles.auction_buttons}>
                         <Button onClick={handleSelect} className={styles.select_btn}><div>select</div></Button>
-                        <AsyncButton isLoading={false} onClick={()=>{}} className={styles.watchlist_btn} loadingSize={20}><div>add to watchlist</div></AsyncButton>
+                        {/* <AsyncButton isLoading={false} onClick={()=>{}} className={styles.watchlist_btn} loadingSize={20}><div>add to watchlist</div></AsyncButton> */}
                     </div>
-                    <p>Remaining Time: <span style={{color: "#FF5454"}}>00:33:11</span></p>
+                    <p>Remaining Time: <span style={{color: "#FF5454"}}><AuctionCountdown endTime={time.toString()}/></span></p>
                 </div>
             </div>
         </div>

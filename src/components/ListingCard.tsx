@@ -3,6 +3,7 @@ import { AuctionItem } from "@/dto";
 import Image from 'next/image'
 import Button from './Button';
 import styles from '@/styles/ListingCard.module.css'
+import AuctionCountdown from './AuctionCountdown';
 
 interface ListingCardProps {
     auction: AuctionItem
@@ -23,6 +24,10 @@ const ListingCard = ({ auction, backgroundColor, wantTime = true }:ListingCardPr
         }
         return text;
     };
+
+    // 2 hours from now in epoch
+    // const time = Date.now() + 7200000;
+    const time = 1701661069578;
 
     const truncatedDescription = truncateText(auction.description, 20);
 
@@ -49,7 +54,7 @@ const ListingCard = ({ auction, backgroundColor, wantTime = true }:ListingCardPr
                         <Button onClick={handleSelect} className={styles.select_btn}><div>upload</div></Button>
                         <Button onClick={()=>{}} className={styles.watchlist_btn}><div>edit</div></Button>
                     </div> }
-                    <p style={wantTime ? {visibility: 'visible'} : {visibility: 'hidden'}}>Remaining Time: <span style={{color: "#FF5454"}}>00:33:11</span></p>
+                    <p style={wantTime ? {visibility: 'visible'} : {visibility: 'hidden'}}>Remaining Time: <span style={{color: "#FF5454"}}><AuctionCountdown endTime={time.toString()} /></span></p>
                 </div>
             </div>
         </div>

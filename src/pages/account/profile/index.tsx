@@ -6,10 +6,11 @@ import { BiEditAlt } from "react-icons/bi";
 import { auctions } from '../../api/auction_item_dummy_data';
 import { useRouter } from 'next/router';
 import { formatUserAddress } from '@/utils/userAddress';
+import ProtectedComponent from '@/components/ProtectedComponent';
+import CreateListingCard from '@/components/CreateListingCard';
 
 // Placeholder user data - Replace with actual user data from state, props, or API
 import { user } from '@/pages/api/user_dummy_data';
-import ProtectedComponent from '@/components/ProtectedComponent';
 
 
 
@@ -37,6 +38,21 @@ const Profile: React.FC = () => {
             {name: "Outbid", color: "#E8B6B6"},
             {name: "Won", color: "#EEEFA7"}
         ];
+
+const getCardBackgroundColor = (status: string) => {
+    switch (status) {
+        case "Draft" || "Watching":
+            return "#B6CDE8";
+        case "Ongoing" || "Highest Bidder":
+            return "#B6E8B8";
+        case "Sold" || "Won":
+            return "#E8B6B6";
+        case "Expired" || "Outbid":
+            return "#EEEFA7";
+        default:
+            return "#FFFFFF";
+    }
+}
 
   return (
     <ProtectedComponent>
@@ -113,7 +129,11 @@ const Profile: React.FC = () => {
                 </div>
             </div>
             <div className={styles.watchlistContainer}>
+                <ListingCard auction={auctions[0]} backgroundColor='#B6CDE8'/>
+                <ListingCard auction={auctions[0]} backgroundColor='#B6E8B8'/>
+                <ListingCard auction={auctions[0]} backgroundColor={getCardBackgroundColor(auctions[0].auctionStatus || "")}/>
                 <ListingCard auction={auctions[0]} backgroundColor='#E8B6B6'/>
+                <CreateListingCard />
             </div>
         </div>
     </ProtectedComponent>
