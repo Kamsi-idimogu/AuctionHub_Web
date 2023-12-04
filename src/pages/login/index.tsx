@@ -140,9 +140,14 @@ const Login = () => {
               Login
             </AsyncButton>
           </form>
-          <Link href="/account/forgot-password">
+          {/* <Link href="/account/forgot-password">
             <i>
               <p className={styles.reset_password}>Forgot your password?</p>
+            </i>
+          </Link> */}
+          <Link href="/register">
+            <i>
+              <p className={styles.reset_password}>Create an account</p>
             </i>
           </Link>
         </aside>

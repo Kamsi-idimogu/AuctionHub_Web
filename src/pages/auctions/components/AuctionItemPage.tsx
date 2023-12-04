@@ -11,6 +11,7 @@ import BidHistoryModal from './BidHistoryModal';
 import { EpochToDateTime } from '@/utils/dateTime';
 import AsyncButton from '@/components/AsyncButton';
 import { viewBiddingHistory } from '@/pages/api/bidder/bidder-api';
+import AuctionCountdown from '@/components/AuctionCountdown';
 
 const inter = Inter({ subsets: ['latin'], weight: ["400", "500", "600", "700", "800", "900"] })
 
@@ -75,6 +76,8 @@ const AuctionItemPage = () => {
         router.push(`/terms-and-conditions`)
     }
 
+    const time =  1701834593247;
+
     return (
         <div className={inter.className}>
             <Navbar />
@@ -93,7 +96,7 @@ const AuctionItemPage = () => {
                     <p className={styles.description}>{auctionItem.description}</p>
 
                     <div className={styles.price}>${auctionItem.currentPrice}</div>
-                    {auctionItem.auctionType === "Forward" && <div className={styles.time}>Time Remaining 00:36:34</div> }
+                    {auctionItem.auctionType === "Forward" && <div className={styles.time}>Time Remaining {<AuctionCountdown endTime={time.toString()} />}</div> }
 
                     <section className={styles.bid_section}>
                         <div className={styles.bid_container}>
