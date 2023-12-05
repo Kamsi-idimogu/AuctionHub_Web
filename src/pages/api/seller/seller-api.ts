@@ -22,7 +22,7 @@ export const createListing = async (formData: any): Promise<payload> => {
       end_time: formData.duration,
     };
 
-    console.table(listingPayload);
+    // console.table(listingPayload);
 
     const resp = await axios.post(
       CREATE_LISTING_ENDPOINT,
@@ -37,7 +37,7 @@ export const createListing = async (formData: any): Promise<payload> => {
       }
     );
 
-    console.log("response:", resp);
+    // console.log("response:", resp);
 
     return {
       status: resp.data.status || "success",
