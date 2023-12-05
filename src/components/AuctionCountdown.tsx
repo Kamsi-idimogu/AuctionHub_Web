@@ -6,7 +6,7 @@ interface AuctionCountdownProps {
     style?: React.CSSProperties;
 }
 
-const AuctionCountdown = ({ endTime }:AuctionCountdownProps) => {
+const AuctionCountdown = ({ endTime, className, style }:AuctionCountdownProps) => {
     const [timeLeft, setTimeLeft] = useState<string>('');
 
     useEffect(() => {
@@ -38,7 +38,7 @@ const AuctionCountdown = ({ endTime }:AuctionCountdownProps) => {
         return () => clearInterval(interval);
     }, [endTime]);
 
-    return <span>{timeLeft}</span>
+    return <span className={className} style={style}>{timeLeft}</span>
 }
 
 export default AuctionCountdown

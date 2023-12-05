@@ -4,7 +4,7 @@ import styles from '../styles/BidHistoryModal.module.css';
 
 type BidHistoryModalProps = {
     onClose: () => void;
-    bidHistory: Array<{ bidder: string; bid: number; time: string }>;
+    bidHistory: Array<{ bidder_name: string; bid_amount: number; created_at: string }>;
 };
 
 const BidHistoryModal: React.FC<BidHistoryModalProps> = ({ onClose, bidHistory = [] }) => {
@@ -25,9 +25,9 @@ const BidHistoryModal: React.FC<BidHistoryModalProps> = ({ onClose, bidHistory =
                     <tbody>
                         {bidHistory && bidHistory.map((entry, index) => (
                             <tr key={index}>
-                                <td>{entry.bidder}</td>
-                                <td>${entry.bid}</td>
-                                <td>{entry.time}</td>
+                                <td>{entry.bidder_name}</td>
+                                <td>${entry.bid_amount}</td>
+                                <td>{entry.created_at}</td>
                             </tr>
                         ))}
                     </tbody>

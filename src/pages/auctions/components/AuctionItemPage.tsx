@@ -43,7 +43,7 @@ const AuctionItemPage = () => {
 
             if (resp?.status === false) return;
 
-            // setBidHistory(resp?.data)
+            setBidHistory(resp?.data)
             setShowBidHistory(true);
         }
         catch (error) {
@@ -65,11 +65,11 @@ const AuctionItemPage = () => {
     }, [auction_id]);
 
     const [bidHistory, setBidHistory] = useState([
-        {bidder: "Ken Carson", bid: 135, time: "14:45:34"},
-        {bidder: "Jack Frost", bid: 130, time: "14:40:12"},
-        {bidder: "Ken Carson", bid: 120, time: "14:35:30"},
-        {bidder: "Ryan", bid: 105, time: "14:34:50"},
-        {bidder: "John Doe", bid: 100, time: "14:34:34"},
+        {bidder_name: "Ken Carson", bid_amount: 135, created_at: "14:45:34"},
+        {bidder_name: "Jack Frost", bid_amount: 130, created_at: "14:40:12"},
+        {bidder_name: "Ken Carson", bid_amount: 120, created_at: "14:35:30"},
+        {bidder_name: "Ryan", bid_amount: 105, created_at: "14:34:50"},
+        {bidder_name: "John Doe", bid_amount: 100, created_at: "14:34:34"},
     ]);
 
     const NavigateToTerms = () => {

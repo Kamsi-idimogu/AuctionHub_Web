@@ -10,6 +10,7 @@ import { userLogin } from "../api/auth/auth-api";
 // import { useAuth } from "@/contexts/authContext";
 import { useAuthStore } from "@/store/authStore";
 import { user } from "../api/user_dummy_data"; // using dummy data for now
+import { CreateUserFromServer } from "@/utils/api-helpers/User";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -43,6 +44,8 @@ const Login = () => {
         const token = resp?.data?.token || "dummy-token";
 
         const expiry = 60; // the expiry time in minutes
+
+        const user = CreateUserFromServer(resp.data);
 
         login(user, token, expiry);
       } catch (error) {
