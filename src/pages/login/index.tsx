@@ -37,7 +37,10 @@ const Login = () => {
         }
 
         if (resp.status === "failed") {
-          alert("Error loggin you in. Please try again later.");
+          alert(resp.message || "Error occured while logging you in. Please try again later.");
+          setErrorMessage(
+            resp.message || "Error occured while logging you in. Please try again later."
+          );
           return;
         }
 

@@ -6,7 +6,7 @@ export type ListingResponse = {
   image_url: string;
   auctionType: AuctionType;
   status: AuctionStatus;
-  currentPrice: number;
+  current_bid_price: number;
   end_time: string;
 };
 

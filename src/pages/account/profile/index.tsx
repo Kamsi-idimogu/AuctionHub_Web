@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import styles from "./styles/ProfilePage.module.css";
 import Navbar from "@/components/Navbar";
 import ListingCard from "@/components/ListingCard";
@@ -10,7 +10,8 @@ import ProtectedComponent from "@/components/ProtectedComponent";
 import CreateListingCard from "@/components/CreateListingCard";
 
 // Placeholder user data - Replace with actual user data from state, props, or API
-import { user } from "@/pages/api/user_dummy_data";
+import { user as dummy_user } from "@/pages/api/user_dummy_data";
+import { useAuthStore } from "@/store/authStore";
 import { Socket, io } from "socket.io-client";
 import {
   BID_ENPOINT,
@@ -20,11 +21,12 @@ import {
   LISTEN_FOR_EXCEPTION_EVENT,
   PLACE_BID_EVENT,
 } from "@/pages/api/endpoints";
-import { AuctionItem } from "@/dto";
+import { AuctionItem, User } from "@/dto";
 import axios from "axios";
 import { viewListing } from "@/pages/api/seller/seller-api";
 // import { getSocket } from "@/websocket/websocket";
 import { useWebSocket } from "@/contexts/wsContext";
+import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
 
 const Profile: React.FC = () => {
   const router = useRouter();
@@ -33,10 +35,22 @@ const Profile: React.FC = () => {
     router.push(`/account/edit/${profileItem}`);
   };
 
-  const CardGroupTitle = user.role === "Seller" ? "Your Listings" : "Watchlist";
+  const [profile, setProfile] = useState<User | null>(null);
+
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (!profile) {
+      if (user) setProfile(user);
+    }
+  }, [user]);
+
+  const getUserListings = async () => {};
+
+  const CardGroupTitle = profile?.role === "seller" ? "Your Listings" : "Watchlist";
 
   const CardGroupLegend =
-    user.role === "Seller"
+    profile?.role === "seller"
       ? [
           { name: "Draft", color: "#B6CDE8" },
           { name: "Ongoing", color: "#B6E8B8" },
@@ -52,20 +66,20 @@ const Profile: React.FC = () => {
 
   const getCardBackgroundColor = (status: string) => {
     switch (status) {
-      case "Draft" || "Watching":
+      case "draft" || "watching":
         return "#B6CDE8";
-      case "Ongoing" || "Highest Bidder":
+      case "ongoing" || "highest bidder":
         return "#B6E8B8";
-      case "Sold" || "Won":
+      case "sold" || "won":
         return "#E8B6B6";
-      case "Expired" || "Outbid":
+      case "expired" || "outbid":
         return "#EEEFA7";
       default:
         return "#FFFFFF";
     }
   };
 
-  const [listingItems, setListingItems] = useState<AuctionItem[]>([]);
+  const [listingItems, setListingItems] = useState<ListingResponse[]>([]);
 
   const { socket, connectToSocket, disconnectSocket } = useWebSocket();
 
@@ -87,7 +101,7 @@ const Profile: React.FC = () => {
       // Update the bid item with the new bid
       setListingItems((prevItems) =>
         prevItems.map((item) =>
-          item.listing_item_id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
+          item.id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
         )
       );
       console.log("listening for bid event");
@@ -110,6 +124,10 @@ const Profile: React.FC = () => {
     socket?.emit(PLACE_BID_EVENT, bidData);
   }
 
+  if (!profile) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <ProtectedComponent>
       <div className={styles.profileContainer}>
@@ -119,7 +137,7 @@ const Profile: React.FC = () => {
           <div className={styles.gridItem}>
             <span className={styles.gridItemTitle}>First Name</span>
             <div className={styles.itemContainer}>
-              <span className={styles.gridItemText}>{user.first_name}</span>
+              <span className={styles.gridItemText}>{profile.first_name}</span>
               <BiEditAlt
                 className={styles.editIcon}
                 onClick={() => navigateToEditItem("first_name")}
@@ -129,7 +147,7 @@ const Profile: React.FC = () => {
           <div className={styles.gridItem}>
             <span className={styles.gridItemTitle}>Last Name</span>
             <div className={styles.itemContainer}>
-              <span className={styles.gridItemText}>{user.last_name}</span>
+              <span className={styles.gridItemText}>{profile.last_name}</span>
               <BiEditAlt
                 className={styles.editIcon}
                 onClick={() => navigateToEditItem("last_name")}
@@ -139,7 +157,7 @@ const Profile: React.FC = () => {
           <div className={styles.gridItem}>
             <span className={styles.gridItemTitle}>Username</span>
             <div className={styles.itemContainer}>
-              <span className={styles.gridItemText}>{user.username}</span>
+              <span className={styles.gridItemText}>{profile.username}</span>
               <BiEditAlt
                 className={styles.editIcon}
                 onClick={() => navigateToEditItem("username")}
@@ -149,7 +167,7 @@ const Profile: React.FC = () => {
           <div className={styles.gridItem}>
             <span className={styles.gridItemTitle}>Password</span>
             <div className={styles.itemContainer}>
-              <span className={styles.gridItemText}>{user.password}</span>
+              <span className={styles.gridItemText}>{profile.password}</span>
               <BiEditAlt
                 className={styles.editIcon}
                 onClick={() => navigateToEditItem("password")}
@@ -159,24 +177,44 @@ const Profile: React.FC = () => {
           <div className={styles.gridItemSingle}>
             <span className={styles.gridItemTitle}>Email</span>
             <div className={styles.itemContainer}>
-              <span className={styles.gridItemText}>{user.email}</span>
+              <span className={styles.gridItemText}>{profile.email}</span>
               <BiEditAlt className={styles.editIcon} onClick={() => navigateToEditItem("email")} />
             </div>
           </div>
-          <div className={styles.gridItemSingle}>
+          {/* <div className={styles.gridItemSingle}>
             <span className={styles.gridItemTitle}>Address</span>
             <div className={styles.itemContainer}>
-              <span className={styles.gridItemText}>{formatUserAddress(user)}</span>
+              <span className={styles.gridItemText}>{formatUserAddress(profile)}</span>
               <BiEditAlt
                 className={styles.editIcon}
                 onClick={() => navigateToEditItem("address")}
+              />
+            </div>
+          </div> */}
+          <div className={styles.gridItem}>
+            <span className={styles.gridItemTitle}>Street Number</span>
+            <div className={styles.itemContainer}>
+              <span className={styles.gridItemText}>{profile.street_number}</span>
+              <BiEditAlt
+                className={styles.editIcon}
+                onClick={() => navigateToEditItem("street_number")}
+              />
+            </div>
+          </div>
+          <div className={styles.gridItem}>
+            <span className={styles.gridItemTitle}>Street Name</span>
+            <div className={styles.itemContainer}>
+              <span className={styles.gridItemText}>{profile.street_name}</span>
+              <BiEditAlt
+                className={styles.editIcon}
+                onClick={() => navigateToEditItem("street_name")}
               />
             </div>
           </div>
           <div className={styles.gridItem}>
             <span className={styles.gridItemTitle}>Country</span>
             <div className={styles.itemContainer}>
-              <span className={styles.gridItemText}>{user.country}</span>
+              <span className={styles.gridItemText}>{profile.country}</span>
               <BiEditAlt
                 className={styles.editIcon}
                 onClick={() => navigateToEditItem("country")}
@@ -186,7 +224,7 @@ const Profile: React.FC = () => {
           <div className={styles.gridItem}>
             <span className={styles.gridItemTitle}>City</span>
             <div className={styles.itemContainer}>
-              <span className={styles.gridItemText}>{user.city}</span>
+              <span className={styles.gridItemText}>{profile.city}</span>
               <BiEditAlt className={styles.editIcon} onClick={() => navigateToEditItem("city")} />
             </div>
           </div>
@@ -205,15 +243,21 @@ const Profile: React.FC = () => {
             ))}
           </div>
         </div>
-        <button onClick={placeBid}>Place Bid</button>
         <div className={styles.watchlistContainer}>
-          <ListingCard auction={auctions[0]} backgroundColor="#B6CDE8" />
+          {listingItems.map((item) => (
+            <ListingCard
+              key={item.id}
+              auction={item}
+              backgroundColor={getCardBackgroundColor(item.status || "")}
+            />
+          ))}
+          {/* <ListingCard auction={auctions[0]} backgroundColor="#B6CDE8" />
           <ListingCard auction={auctions[0]} backgroundColor="#B6E8B8" />
           <ListingCard
             auction={auctions[0]}
             backgroundColor={getCardBackgroundColor(auctions[0].auctionStatus || "")}
           />
-          <ListingCard auction={auctions[0]} backgroundColor="#E8B6B6" />
+          <ListingCard auction={auctions[0]} backgroundColor="#E8B6B6" /> */}
           <CreateListingCard />
         </div>
       </div>

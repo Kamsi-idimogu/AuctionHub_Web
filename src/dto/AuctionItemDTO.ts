@@ -4,9 +4,9 @@ export type AuctionItem = {
   name: string;
   description: string;
   imageUrl: string;
-  startingPrice: number;
+  startingPrice: number | undefined;
   currentPrice: number;
-  auctionType: AuctionType;
+  auctionType: AuctionType | undefined;
   auctionStartTime?: Date;
   auctionEndTime?: Date;
   auctionStatus?: AuctionStatus;

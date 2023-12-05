@@ -5,10 +5,13 @@ import styles from "../styles/CreateListing.module.css";
 import Navbar from "@/components/Navbar";
 import { AuctionItem } from "@/dto";
 import { auctions } from "@/pages/api/auction_item_dummy_data";
+import { listings } from "@/pages/api/listing_dummy_data";
 import router from "next/router";
 import AsyncButton from "@/components/AsyncButton";
 import { createListing } from "@/pages/api/seller/seller-api";
 import ImageUpload from "./ImageUpload";
+import { ListingRequest } from "@/pages/api/api-contracts/requests/Listing";
+import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
@@ -29,21 +32,16 @@ export interface ListingFormData {
   decrementValue: number | undefined;
 }
 const CreateListing = ({ editAuctionId }: CreateListingProps) => {
-  const [auctionItem, setAuctionItem] = useState<AuctionItem>({
-    id: "",
+  const [auctionItem, setAuctionItem] = useState<ListingResponse>({
+    id: 0,
     name: "",
     description: "",
-    imageUrl: "",
-    startingPrice: undefined,
-    reservePrice: undefined,
-    currentPrice: undefined,
-    auctionType: "Unset",
-    auctionStartTime: new Date(),
-    auctionEndTime: new Date(),
-    auctionStatus: "Draft",
-    keyword1: "",
-    keyword2: "",
-    keyword3: "",
+    image_name: "",
+    image_url: "",
+    auctionType: "forward",
+    status: "draft",
+    currentPrice: 0,
+    end_time: "",
   });
 
   const [auctionImage, setAuctionImage] = useState<File | null>(null);
@@ -79,9 +77,9 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
   const [isSaveDraftLoading, setIsSaveDraftLoading] = useState<boolean>(false);
 
   const findAuctionItem = (id: string) => {
-    const auction = auctions.find((auction) => auction.id === id);
-    if (auction) {
-      setAuctionItem(auction);
+    const listing = listings.find((listing) => listing.id === parseInt(id));
+    if (listing) {
+      setAuctionItem(listing);
     }
   };
 
@@ -336,7 +334,7 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
               name="keyword1"
               placeholder="Keyword 1"
               className={`${styles.short_input} ${errorMessages.name && styles.error}`}
-              value={auctionItem.keyword1 || formData.keyword1}
+              value={formData.keyword1}
               onChange={handleChange}
             />
             <input
@@ -344,7 +342,7 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
               name="keyword2"
               placeholder="Keyword 2"
               className={`${styles.short_input} ${errorMessages.name && styles.error}`}
-              value={auctionItem.keyword2 || formData.keyword2}
+              value={formData.keyword2}
               onChange={handleChange}
             />
             <input
@@ -352,7 +350,7 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
               name="keyword3"
               placeholder="Keyword 3"
               className={`${styles.short_input} ${errorMessages.name && styles.error}`}
-              value={auctionItem.keyword3 || formData.keyword3}
+              value={formData.keyword3}
               onChange={handleChange}
             />
 
@@ -391,7 +389,7 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
                 name="startingPrice"
                 placeholder="Starting Bid Price"
                 className={`${styles.short_input} ${errorMessages.startingPrice && styles.error}`}
-                value={auctionItem.startingPrice || formData.startingPrice}
+                value={formData.startingPrice}
                 onChange={handleChange}
               />
             )}
