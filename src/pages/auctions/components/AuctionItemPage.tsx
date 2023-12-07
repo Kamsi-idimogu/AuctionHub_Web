@@ -26,7 +26,7 @@ const dummy_data: ViewCatalogResponse = {
   description: "Test",
   image_url: "/images/dummy-product.png",
   decrement_amount: 1,
-  auctionType: "forward",
+  auction_type: "forward",
   current_bid_price: 100,
   end_time: "1701834593247",
   listing_item_id: 1,
@@ -40,10 +40,11 @@ const AuctionItemPage = () => {
   const [auctionItem, setAuctionItem] = useState<ViewCatalogResponse | undefined>();
   const [showBidHistory, setShowBidHistory] = useState<boolean>(false);
   const [isBidHistoryLoading, setIsBidHistoryLoading] = useState<boolean>(false);
+  const [isDutchBidLoading, setIsDutchBidLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [auctionItems, setAuctionItems] = useState<ViewCatalogResponse[]>([]);
   const [bidAmount, setBidAmount] = useState<number | null>(null);
-  const { user } = useAuthStore();
+  const { user, isLoggedIn } = useAuthStore();
   const [wsSocket, setWsSocket] = useState<Socket | null>(null);
 
   const toggleBidHistory = async () => {
@@ -99,9 +100,6 @@ const AuctionItemPage = () => {
     router.push(`/terms-and-conditions`);
   };
 
-  //   const time = 1701834593247;
-  const time = Date.now() + 1000;
-
   const { connectToSocket, disconnectSocket } = useWebSocket();
 
   useEffect(() => {
@@ -134,21 +132,21 @@ const AuctionItemPage = () => {
     };
 
     fetchInitialBidItems();
-    console.log("running stuff");
 
     socket?.on(LISTEN_FOR_BID_EVENT, (data) => {
-      console.log("bid_event_data: ", data);
-      console.log("something:", data?.data);
-      const { listing_item_id, current_bid_price } = data?.data;
+      const { listing_item_id, current_bid_price, bidder_id } = data?.data;
 
       if (auctionItem?.listing_item_id === listing_item_id) {
-        console.log("workss hd");
         setAuctionItem((prevItem) => {
           if (prevItem) {
             return { ...prevItem, current_bid_price: current_bid_price };
           }
           return prevItem;
         });
+
+        if (auctionItem?.auction_type === "dutch" && bidder_id === user?.id) {
+          router.push(`/`);
+        }
       }
       console.log("listening for bid event", listing_item_id, current_bid_price);
     });
@@ -171,6 +169,10 @@ const AuctionItemPage = () => {
   }
 
   function placeBid() {
+    if (!isLoggedIn) {
+      router.push("/login");
+      return;
+    }
     if (!validateBid()) return;
     const bidData = {
       listing_item_id: auctionItem?.listing_item_id,
@@ -184,6 +186,22 @@ const AuctionItemPage = () => {
     setBidAmount(null);
 
     console.log("bid placed");
+  }
+
+  function placeDutchBid() {
+    setIsDutchBidLoading(true);
+    if (!isLoggedIn) {
+      router.push("/login");
+      return;
+    }
+    const bidData = {
+      listing_item_id: auctionItem?.listing_item_id,
+      bid_amount: auctionItem?.current_bid_price,
+      bidder_id: user?.id,
+    };
+
+    wsSocket?.emit(PLACE_BID_EVENT, bidData);
+    setIsDutchBidLoading(false);
   }
 
   const validateBid = () => {
@@ -231,27 +249,39 @@ const AuctionItemPage = () => {
           </div>
 
           <section className={styles.bid_section}>
-            <div className={styles.bid_container}>
-              <input
-                type="text"
-                name="bid"
-                placeholder="Enter Bid"
-                className={styles.bid_input}
-                value={bidAmount || ""}
-                onChange={onBidChange}
-              />
-              <button onClick={placeBid} className={styles.bid_button}>
-                Bid
-              </button>
-            </div>
+            {auctionItem.auction_type === "forward" ? (
+              <>
+                <div className={styles.bid_container}>
+                  <input
+                    type="text"
+                    name="bid"
+                    placeholder="Enter Bid"
+                    className={styles.bid_input}
+                    value={bidAmount || ""}
+                    onChange={onBidChange}
+                  />
+                  <button onClick={placeBid} className={styles.bid_button}>
+                    Bid
+                  </button>
+                </div>
 
-            <AsyncButton
-              isLoading={isBidHistoryLoading}
-              onClick={toggleBidHistory}
-              className={styles.bid_history_btn}
-            >
-              <div>bid history</div>
-            </AsyncButton>
+                <AsyncButton
+                  isLoading={isBidHistoryLoading}
+                  onClick={toggleBidHistory}
+                  className={styles.bid_history_btn}
+                >
+                  <div>bid history</div>
+                </AsyncButton>
+              </>
+            ) : (
+              <AsyncButton
+                isLoading={isDutchBidLoading}
+                onClick={placeDutchBid}
+                className={styles.bid_btn}
+              >
+                <div>bid</div>
+              </AsyncButton>
+            )}
           </section>
           <div className={styles.shipping_and_tax} onClick={NavigateToTerms}>
             Shipping & Tax

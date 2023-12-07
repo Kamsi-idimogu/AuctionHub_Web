@@ -37,37 +37,42 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
   const [hasConnectedBefore, setHasConnectedBefore] = useState<boolean>(false);
 
   const connectToSocket = useCallback((): Socket | null => {
-    if (!socket || !socket.connected) {
-      const newSocket = io(BID_ENPOINT, {
-        withCredentials: true, // Important for sending cookies
-      });
+    try {
+      if (!socket || !socket.connected) {
+        const newSocket = io(BID_ENPOINT, {
+          withCredentials: true, // Important for sending cookies
+        });
 
-      newSocket.on("connect", () => {
-        console.log("Connected to the server");
-      });
+        newSocket.on("connect", () => {
+          console.log("Connected to the server");
+        });
 
-      newSocket.on("disconnect", (reason) => {
-        console.log(`Disconnected from the server: ${reason}`);
-      });
+        newSocket.on("disconnect", (reason) => {
+          console.log(`Disconnected from the server: ${reason}`);
+        });
 
-      newSocket.on(LISTEN_FOR_BID_ERROR_EVENT, (data) => {
-        console.log("bid_event_error: ", data);
-      });
+        newSocket.on(LISTEN_FOR_BID_ERROR_EVENT, (data) => {
+          console.log("bid_event_error: ", data);
+        });
 
-      newSocket.on(LISTEN_FOR_EXCEPTION_EVENT, (data) => {
-        console.log("exception_event_error: ", data);
-      });
+        newSocket.on(LISTEN_FOR_EXCEPTION_EVENT, (data) => {
+          console.log("exception_event_error: ", data);
+        });
 
-      newSocket.on(LISTEN_FOR_DECREMENT_BID_EVENT, (data) => {
-        console.log("_decrement_bid_event: ", data);
-      });
-      setSocket(socket);
-      // console.log("socket wokring");
-      return newSocket;
-    } else {
-      console.log("socket not working");
+        newSocket.on(LISTEN_FOR_DECREMENT_BID_EVENT, (data) => {
+          console.log("_decrement_bid_event: ", data);
+        });
+        setSocket(socket);
+        // console.log("socket wokring");
+        return newSocket;
+      } else {
+        console.log("socket not working");
+      }
+      setHasConnectedBefore(true);
+      return socket;
+    } catch (err) {
+      console.log("WS not connected Error:", err);
     }
-    setHasConnectedBefore(true);
     return socket;
   }, [socket]);
 

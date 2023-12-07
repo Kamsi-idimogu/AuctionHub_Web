@@ -1,30 +1,15 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./styles/ProfilePage.module.css";
 import Navbar from "@/components/Navbar";
 import ListingCard from "@/components/ListingCard";
 import { BiEditAlt } from "react-icons/bi";
-import { auctions } from "../../api/auction_item_dummy_data";
 import { useRouter } from "next/router";
-import { formatUserAddress } from "@/utils/userAddress";
 import ProtectedComponent from "@/components/ProtectedComponent";
 import CreateListingCard from "@/components/CreateListingCard";
-
-// Placeholder user data - Replace with actual user data from state, props, or API
-import { user as dummy_user } from "@/pages/api/user_dummy_data";
 import { useAuthStore } from "@/store/authStore";
-import { Socket, io } from "socket.io-client";
-import {
-  BID_ENPOINT,
-  LISTEN_FOR_BID_ERROR_EVENT,
-  LISTEN_FOR_BID_EVENT,
-  LISTEN_FOR_DECREMENT_BID_EVENT,
-  LISTEN_FOR_EXCEPTION_EVENT,
-  PLACE_BID_EVENT,
-} from "@/pages/api/endpoints";
-import { AuctionItem, User } from "@/dto";
-import axios from "axios";
+import { LISTEN_FOR_BID_EVENT } from "@/pages/api/endpoints";
+import { User } from "@/dto";
 import { viewListing } from "@/pages/api/seller/seller-api";
-// import { getSocket } from "@/websocket/websocket";
 import { useWebSocket } from "@/contexts/wsContext";
 import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
 
@@ -117,8 +102,6 @@ const Profile: React.FC = () => {
 
       const bid_amount = current_bid_price;
 
-      /// check for roles TODO
-
       if (profile?.role === "seller") {
         setListingItems((prevItems) =>
           prevItems.map((item) =>
@@ -142,17 +125,6 @@ const Profile: React.FC = () => {
       disconnectSocket();
     };
   }, [connectToSocket, disconnectSocket, profile?.role]);
-
-  //   function placeBid() {
-  //     const bidData = {
-  //       listing_item_id: 1,
-  //       bid_amount: 350,
-  //       bidder_id: 1,
-  //     };
-  //     console.log("Placing bid");
-
-  //     socket?.emit(PLACE_BID_EVENT, bidData);
-  //   }
 
   if (!profile) {
     return <div>Loading...</div>;
@@ -188,10 +160,6 @@ const Profile: React.FC = () => {
             <span className={styles.gridItemTitle}>Username</span>
             <div className={styles.itemContainer}>
               <span className={styles.gridItemText}>{profile.username}</span>
-              <BiEditAlt
-                className={styles.editIcon}
-                onClick={() => navigateToEditItem("username")}
-              />
             </div>
           </div>
           <div className={styles.gridItem}>
@@ -208,19 +176,9 @@ const Profile: React.FC = () => {
             <span className={styles.gridItemTitle}>Email</span>
             <div className={styles.itemContainer}>
               <span className={styles.gridItemText}>{profile.email}</span>
-              <BiEditAlt className={styles.editIcon} onClick={() => navigateToEditItem("email")} />
             </div>
           </div>
-          {/* <div className={styles.gridItemSingle}>
-            <span className={styles.gridItemTitle}>Address</span>
-            <div className={styles.itemContainer}>
-              <span className={styles.gridItemText}>{formatUserAddress(profile)}</span>
-              <BiEditAlt
-                className={styles.editIcon}
-                onClick={() => navigateToEditItem("address")}
-              />
-            </div>
-          </div> */}
+
           <div className={styles.gridItem}>
             <span className={styles.gridItemTitle}>Street Number</span>
             <div className={styles.itemContainer}>
@@ -290,13 +248,7 @@ const Profile: React.FC = () => {
                   backgroundColor={getCardBackgroundColor(item.status)}
                 />
               ))}
-          {/* <ListingCard auction={auctions[0]} backgroundColor="#B6CDE8" />
-          <ListingCard auction={auctions[0]} backgroundColor="#B6E8B8" />
-          <ListingCard
-            auction={auctions[0]}
-            backgroundColor={getCardBackgroundColor(auctions[0].auctionStatus || "")}
-          />
-          <ListingCard auction={auctions[0]} backgroundColor="#E8B6B6" /> */}
+
           <CreateListingCard />
         </div>
       </div>

@@ -7,7 +7,6 @@ import {
   VIEW_CATALOGUE_ENDPOINT,
   VIEW_WATCHLIST_ENDPOINT,
 } from "../endpoints";
-import { io } from "socket.io-client";
 
 export const viewCatalog = async (): Promise<payload> => {
   try {

@@ -42,7 +42,7 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
       </div>
       <div className={styles.auction_info}>
         <div className={styles.auction_title_and_price}>
-          <h3>{auction.name}</h3>
+          <h3 style={{ textTransform: "capitalize" }}>{auction.name}</h3>
           <h3 style={{ color: "#FF5454" }}>${auction.current_bid_price}</h3>
         </div>
         <div className={styles.auction_description}>
@@ -51,10 +51,10 @@ const AuctionCard = ({ auction }: AuctionCardProps) => {
           <p>
             Auction Type:{" "}
             <span
-              style={{ color: "#13B8FF", cursor: "pointer" }}
-              onClick={() => handleCategoryClick(auction.auctionType)}
+              style={{ color: "#13B8FF", cursor: "pointer", textTransform: "capitalize" }}
+              onClick={() => handleCategoryClick(auction.auction_type)}
             >
-              {auction.auctionType}
+              {auction.auction_type}
             </span>
           </p>
         </div>

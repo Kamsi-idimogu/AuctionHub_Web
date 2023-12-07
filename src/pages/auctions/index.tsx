@@ -22,7 +22,7 @@ export interface ViewCatalogResponse {
   description: string;
   image_url: string;
   decrement_amount: number;
-  auctionType: AuctionType;
+  auction_type: AuctionType;
   current_bid_price: number;
   end_time: string;
   listing_item_id: number;
@@ -42,11 +42,12 @@ const AuctionsPage = () => {
   const categories = ["Electronics", "Tools", "Toys"];
 
   const handleCategoryClick = (category: string) => {
-    const currentQuery = { ...query, category };
-    router.push({
-      pathname: "/auctions",
-      query: currentQuery,
-    });
+    // const currentQuery = { ...query, category };
+    // router.push({
+    //   pathname: "/auctions",
+    //   query: currentQuery,
+    // });
+    router.push(`/auctions?search=${category}`);
   };
 
   // const filteredAuctions = auctions.filter((auction) => {
@@ -126,7 +127,7 @@ const AuctionsPage = () => {
   const [auctionItems, setAuctionItems] = useState<ViewCatalogResponse[]>([]);
 
   const filteredAuctions = auctionItems?.filter((auction) => {
-    return !query.auction_type || auction.auctionType === query.auction_type;
+    return !query.auction_type || auction.auction_type === query.auction_type;
   });
 
   const { connectToSocket, disconnectSocket } = useWebSocket();
@@ -169,18 +170,18 @@ const AuctionsPage = () => {
     }
 
     if (query.search) {
-      // if (searchResults?.length === 0) {
-      //   return (
-      //     <div className={styles.no_auctions_container}>
-      //       <h1>No Results Found</h1>
-      //     </div>
-      //   );
-      // }
+      if (searchResults?.length === 0) {
+        return (
+          <div className={styles.no_auctions_container}>
+            <h1>No Results Found</h1>
+          </div>
+        );
+      }
 
       return (
         <div className={styles.auctions_container}>
           {searchResults?.map((auction) => {
-            return <AuctionCard key={auction.id} auction={auction} />;
+            return <AuctionCard key={auction.listing_item_id} auction={auction} />;
           })}
         </div>
       );
@@ -189,7 +190,7 @@ const AuctionsPage = () => {
     return (
       <div className={styles.auctions_container}>
         {filteredAuctions?.map((auction) => {
-          return <AuctionCard key={auction.id} auction={auction} />;
+          return <AuctionCard key={auction.listing_item_id} auction={auction} />;
         })}
       </div>
     );
@@ -210,29 +211,7 @@ const AuctionsPage = () => {
           </ul>
         </section>
         <section className={styles.auctions_section}>
-          <h1>{getTitle()}</h1>
-
-          {/* {auctionsLoading ? (
-            <div className={styles.loading_container}>
-              <div className={styles.loading}>
-                <LoadingIndicator width={100} height={100} />{" "}
-              </div>
-            </div>
-          ) : (
-            <>
-              {filteredAuctions?.length === 0 && (
-                <div className={styles.no_auctions_container}>
-                  <h1>No Items being Auctioned</h1>
-                </div>
-              )}
-              <div className={styles.auctions_container}>
-                {filteredAuctions?.map((auction) => {
-                  return <AuctionCard key={auction.id} auction={auction} />;
-                })}
-              </div>
-            </>
-          )} */}
-
+          <h1 style={{ textTransform: "capitalize" }}>{getTitle()}</h1>
           {getAuctionsBody()}
         </section>
       </div>

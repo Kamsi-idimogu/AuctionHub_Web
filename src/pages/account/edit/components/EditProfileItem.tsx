@@ -63,8 +63,6 @@ const EditProfileItem = ({
 
       updateUserLocally({ ...profile, [field]: value });
 
-      alert("Profile updated successfully");
-
       router.push(`/account/profile`);
     } catch (error) {
       console.log(error);

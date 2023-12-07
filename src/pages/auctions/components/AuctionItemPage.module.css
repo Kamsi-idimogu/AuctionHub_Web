@@ -94,6 +94,23 @@
   letter-spacing: 1px;
 }
 
+.bid_btn {
+  width: 240px;
+  height: 45px;
+  background-color: #01da6e;
+  border-radius: 10px;
+  border: none;
+  font-size: 23px;
+  font-weight: 700;
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 .shipping_and_tax {
   color: #13b8ff;
   font-weight: 600;
