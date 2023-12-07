@@ -59,7 +59,7 @@ const LandingPage = () => {
       <section className={styles.featured_section}>
         <h1>Current Auctions</h1>
         <div className={styles.featured_auctions}>
-          {featuredAuctions.slice(0, 4).map((auction) => {
+          {featuredAuctions?.slice(0, 4).map((auction) => {
             return <AuctionCard key={auction.id} auction={auction} />;
           })}
         </div>

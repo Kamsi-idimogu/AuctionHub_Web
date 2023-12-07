@@ -145,7 +145,7 @@ const AuctionItemPage = () => {
         });
 
         if (auctionItem?.auction_type === "dutch" && bidder_id === user?.id) {
-          router.push(`/`);
+          router.push(`/checkout?id=${auctionItem?.listing_item_id}`);
         }
       }
       console.log("listening for bid event", listing_item_id, current_bid_price);

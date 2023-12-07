@@ -1,6 +1,7 @@
 .container {
   max-width: 1080px;
   margin: 2rem auto 0;
+  padding-bottom: 4rem;
 }
 
 .container h1 {
@@ -81,7 +82,7 @@
 }
 
 .image_placeholder {
-  width: 122px;
+  width: 125px;
   height: 115px;
   background-color: #d9d9d9;
 }
@@ -125,8 +126,9 @@
   margin-bottom: 10px;
 }
 
-.form button {
+.submit_btn {
   width: 167px;
+  height: 55px;
   border: none;
   border-radius: 18px;
   background-color: #a3f8a1;
@@ -138,4 +140,35 @@
   letter-spacing: 3px;
   padding: 1.2rem 1rem;
   margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading_container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.loading_text{
+  font-size: 54px;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  line-height: 1;
+}
+
+.error_label{
+  color: red;
+  font-size: 1.2rem;
+  font-style: italic;
+  visibility: hidden;
+}
+
+.error_label.active{
+  visibility: visible;
 }
