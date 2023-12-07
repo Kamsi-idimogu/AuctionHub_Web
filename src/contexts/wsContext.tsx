@@ -4,7 +4,7 @@ import {
   LISTEN_FOR_DECREMENT_BID_EVENT,
   LISTEN_FOR_EXCEPTION_EVENT,
 } from "@/pages/api/endpoints";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
 
 interface WsProviderProps {
@@ -12,15 +12,18 @@ interface WsProviderProps {
 }
 
 interface IWebSocketContext {
-  socket: Socket | null;
-  connectToSocket: () => void;
+  getSocket: () => Socket | null;
+  connectToSocket: () => Socket | null;
   disconnectSocket: () => void;
 }
 
 const WebSocketContext = createContext<IWebSocketContext>({
-  socket: null,
-  connectToSocket: function (): void {
+  getSocket: function (): Socket | null {
+    return null;
+  },
+  connectToSocket: function (): Socket | null {
     console.log("Function not implemented.");
+    return null;
   },
   disconnectSocket: function (): void {
     console.log("Function not implemented.");
@@ -33,48 +36,54 @@ export const WsProvider: React.FC<WsProviderProps> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [hasConnectedBefore, setHasConnectedBefore] = useState<boolean>(false);
 
-  const connectToSocket = () => {
+  const connectToSocket = useCallback((): Socket | null => {
     if (!socket || !socket.connected) {
-      const socket = io(BID_ENPOINT, {
+      const newSocket = io(BID_ENPOINT, {
         withCredentials: true, // Important for sending cookies
       });
 
-      socket.on("connect", () => {
+      newSocket.on("connect", () => {
         console.log("Connected to the server");
       });
 
-      socket.on("disconnect", (reason) => {
+      newSocket.on("disconnect", (reason) => {
         console.log(`Disconnected from the server: ${reason}`);
       });
 
-      socket.on(LISTEN_FOR_BID_ERROR_EVENT, (data) => {
+      newSocket.on(LISTEN_FOR_BID_ERROR_EVENT, (data) => {
         console.log("bid_event_error: ", data);
       });
 
-      socket.on(LISTEN_FOR_EXCEPTION_EVENT, (data) => {
+      newSocket.on(LISTEN_FOR_EXCEPTION_EVENT, (data) => {
         console.log("exception_event_error: ", data);
       });
 
-      socket.on(LISTEN_FOR_DECREMENT_BID_EVENT, (data) => {
+      newSocket.on(LISTEN_FOR_DECREMENT_BID_EVENT, (data) => {
         console.log("_decrement_bid_event: ", data);
       });
       setSocket(socket);
-      console.log("socket wokring");
+      // console.log("socket wokring");
+      return newSocket;
     } else {
       console.log("socket not working");
     }
     setHasConnectedBefore(true);
+    return socket;
+  }, [socket]);
+
+  const getSocket = (): Socket | null => {
+    return socket;
   };
 
-  const disconnectSocket = () => {
+  const disconnectSocket = useCallback(() => {
     if (socket) {
       console.log("disconnecting socket");
       socket.disconnect();
     }
-  };
+  }, [socket]);
 
   return (
-    <WebSocketContext.Provider value={{ socket, connectToSocket, disconnectSocket }}>
+    <WebSocketContext.Provider value={{ getSocket, connectToSocket, disconnectSocket }}>
       {children}
     </WebSocketContext.Provider>
   );

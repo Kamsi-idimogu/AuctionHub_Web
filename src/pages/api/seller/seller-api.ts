@@ -69,9 +69,9 @@ export const viewListing = async (): Promise<payload> => {
 
 export const startAuction = async (listing_item_id: number): Promise<payload> => {
   try {
-    const resp = await axios.post(START_AUCTION_ENDPOINT + "/" + listing_item_id, {
-      withCredentials: true,
-    });
+    const url = START_AUCTION_ENDPOINT + "/" + listing_item_id;
+
+    const resp = await axios.post(url, {}, { withCredentials: true });
 
     console.log("response:", resp);
 

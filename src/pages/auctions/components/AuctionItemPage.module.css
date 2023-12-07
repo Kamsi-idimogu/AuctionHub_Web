@@ -1,126 +1,131 @@
-.container{
-    display: flex;
-    gap: 2rem;
-    padding-top: 5rem;
-    max-width: 1080px;
-    margin: 0 auto 5rem;
-    background-color: #FFFFFF;
+.container {
+  display: flex;
+  gap: 2rem;
+  padding-top: 5rem;
+  max-width: 1080px;
+  margin: 0 auto 5rem;
+  background-color: #ffffff;
 }
 
-.image_container{
-    width: 525px;
-    height: 526px;
+.container > h1 {
+  margin: 0 auto;
 }
 
-.image_container > img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.image_container {
+  width: 525px;
+  height: 526px;
 }
 
-.info_section{
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.image_container > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info_section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .info_section > h1 {
-    font-size: 4.2rem;
-    font-weight: 700;
-    color: #000000;
+  font-size: 4.2rem;
+  font-weight: 700;
+  color: #000000;
+  text-transform: capitalize;
 }
 
 .description {
-    font-size: 1.1rem;
-    font-weight: 400;
-    max-width: 380px;
-    margin-bottom: 2rem;
+  font-size: 1.1rem;
+  font-weight: 400;
+  max-width: 380px;
+  margin-bottom: 2rem;
 }
 
-.price{
-    font-size: 2.4rem;
-    font-weight: 800;
-    color: #000000;
-    color: #FF5454;
+.price {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #000000;
+  color: #ff5454;
 }
 
-.time{
-    font-size: 1.1rem;
-    font-weight: 400;
-    color: #000000;
-    margin-bottom: 5rem;
+.time {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #000000;
+  margin-bottom: 5rem;
 }
 
-.bid_section{
-    display: flex;
-    gap: 3rem;
+.bid_section {
+  display: flex;
+  gap: 3rem;
 }
-.bid_container{
-    display: flex;
+.bid_container {
+  display: flex;
 }
-.bid_input{
-    width: 240px;
-    height: 45px;
-    background-color: #D9D9D9;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border: none;
-    padding: 0 1rem;
-    font-size: 18px;
+.bid_input {
+  width: 240px;
+  height: 45px;
+  background-color: #d9d9d9;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border: none;
+  padding: 0 1rem;
+  font-size: 18px;
 }
-.bid_input::placeholder{
-    color: #000000;
-}
-
-.bid_button{
-    padding: 0 1.5rem;
-    background-color: #01DA6E;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border: none;
-    font-size: 18px;
-    font-weight: 700;
-    color: #000000;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.bid_input::placeholder {
+  color: #000000;
 }
 
-.shipping_and_tax{
-    color: #13B8FF;
-    font-weight: 600;
-    cursor: pointer;
-    width: max-content;
+.bid_button {
+  padding: 0 1.5rem;
+  background-color: #01da6e;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.bid_history_btn{
-    background-color: #fff;
-    border-radius: 20px;
-    border: 1.5px solid #000;
-    width: 150px;
-    height: 45px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #000000;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.shipping_and_tax {
+  color: #13b8ff;
+  font-weight: 600;
+  cursor: pointer;
+  width: max-content;
 }
 
-.error_label{
-    margin-top: 5rem;
-    color: red;
-    font-size: 1.2rem;
-    font-style: italic;
-    visibility: hidden;
+.bid_history_btn {
+  background-color: #fff;
+  border-radius: 20px;
+  border: 1.5px solid #000;
+  width: 150px;
+  height: 45px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.error_label.active{
-    visibility: visible;
+.error_label {
+  margin-top: 5rem;
+  color: red;
+  font-size: 1.2rem;
+  font-style: italic;
+  visibility: hidden;
+}
+
+.error_label.active {
+  visibility: visible;
 }

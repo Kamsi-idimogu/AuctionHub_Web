@@ -5,13 +5,14 @@ import styles from "../styles/CreateListing.module.css";
 import Navbar from "@/components/Navbar";
 import { AuctionItem } from "@/dto";
 import { auctions } from "@/pages/api/auction_item_dummy_data";
-import { listings } from "@/pages/api/listing_dummy_data";
+// import { listings } from "@/pages/api/listing_dummy_data";
 import router from "next/router";
 import AsyncButton from "@/components/AsyncButton";
-import { createListing } from "@/pages/api/seller/seller-api";
+import { createListing, startAuction, viewListing } from "@/pages/api/seller/seller-api";
 import ImageUpload from "./ImageUpload";
 import { ListingRequest } from "@/pages/api/api-contracts/requests/Listing";
 import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
+import { WatchListResponse } from "@/pages/account/profile";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
@@ -33,14 +34,14 @@ export interface ListingFormData {
 }
 const CreateListing = ({ editAuctionId }: CreateListingProps) => {
   const [auctionItem, setAuctionItem] = useState<ListingResponse>({
-    id: 0,
+    listing_item_id: 0,
     name: "",
     description: "",
     image_name: "",
     image_url: "",
     auctionType: "forward",
     status: "draft",
-    currentPrice: 0,
+    current_bid_price: 0,
     end_time: "",
   });
 
@@ -59,6 +60,23 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
     decrementValue: undefined, // only for dutch auctions
   });
 
+  const [listings, setListings] = useState<ListingResponse[]>([]);
+
+  /**
+   *   id: number;
+  name: string;
+  description: string;
+  image_url: string;
+  decrement_amount: number;
+  auctionType: AuctionType;
+  current_bid_price: number;
+  end_time: string;
+  listing_item_id: number;
+  seller_id: number;
+  starting_bid_price: number;
+  status: AuctionStatus;
+   */
+
   const [errorMessages, setErrorMessages] = useState({
     name: "",
     description: "",
@@ -76,17 +94,42 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
   const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
   const [isSaveDraftLoading, setIsSaveDraftLoading] = useState<boolean>(false);
 
-  const findAuctionItem = (id: string) => {
-    const listing = listings.find((listing) => listing.id === parseInt(id));
+  const findAuctionItem = (list: ListingResponse[], id: string) => {
+    const listing = list.find((listing) => listing.listing_item_id === Number(id));
+    console.log("listing: ", listing);
     if (listing) {
       setAuctionItem(listing);
     }
   };
 
   useEffect(() => {
-    if (typeof editAuctionId === "string") {
-      findAuctionItem(editAuctionId);
-    }
+    let resp: any;
+    const getListings = async () => {
+      resp = await viewListing();
+      try {
+        if (resp?.status === "failed") {
+          alert("Error occured while fetching listings. Please try again later.");
+          return;
+        }
+
+        if (resp?.status === false) return;
+
+        if (typeof editAuctionId === "string") {
+          const data = resp?.data as ListingResponse[];
+
+          if (data) {
+            findAuctionItem(resp?.data, editAuctionId);
+          }
+        }
+        console.log("listings: ", resp);
+
+        setListings(resp?.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getListings();
   }, [editAuctionId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -241,6 +284,7 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
         resp = await createListing(formData);
         // call to server to get auction item by id
         // start the obtained auction
+        console.log("resp: ", resp);
 
         if (resp === undefined) {
           alert("Something went wrong. Please try again later");
@@ -251,8 +295,33 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
           alert("Error creating listing. Please try again later.");
           return;
         }
-        clearAllData();
-        router.push(`/account/profile`);
+        setTimeout(async () => {
+          const listing = listings.find(
+            (listing: any) => listing.name === formData.name.toLowerCase()
+          ) as ListingResponse;
+
+          console.log("listing: ", listings);
+
+          if (listing === undefined) {
+            alert("Something went wrong. Please try again later");
+            return;
+          }
+
+          resp = await startAuction(listing.listing_item_id);
+
+          if (resp === undefined) {
+            alert("Something went wrong. Please try again later");
+            return;
+          }
+          if (resp.status === "failed") {
+            alert("Error starting auction. Please try again later.");
+            return;
+          }
+
+          clearAllData();
+          // router.push(`/account/profile`);
+          window.location.href = `/account/profile`;
+        }, 2000);
       } catch (error) {
         console.log(error);
         setDisplayErrorMessage("Server error occured. Please try again later");
@@ -279,8 +348,11 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
           alert("Error creating listing. Please try again later.");
           return;
         }
-        clearAllData();
-        router.push(`/account/profile`);
+        setTimeout(async () => {
+          clearAllData();
+          // router.push(`/account/profile`);
+          window.location.href = `/account/profile`;
+        }, 1000);
       } catch (error) {
         console.log(error);
         setDisplayErrorMessage("Server error occured. Please try again later");

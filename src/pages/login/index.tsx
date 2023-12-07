@@ -37,10 +37,8 @@ const Login = () => {
         }
 
         if (resp.status === "failed") {
-          alert(resp.message || "Error occured while logging you in. Please try again later.");
-          setErrorMessage(
-            resp.message || "Error occured while logging you in. Please try again later."
-          );
+          setErrorMessage("Error occured while logging you in. Please create an account.");
+          // alert(resp.message || "Error occured while logging you in. Please try again later.");
           return;
         }
 
@@ -51,14 +49,15 @@ const Login = () => {
         const user = CreateUserFromServer(resp.data);
 
         login(user, token, expiry);
+
+        router.push(`/account/profile`);
+
+        clearAllData();
       } catch (error) {
         console.log(error);
         setErrorMessage("Error occured while logging you in. Please try again later.");
       } finally {
         setIsLoading(false);
-
-        clearAllData();
-        router.push(`/account/profile`);
 
         if (resp?.status === false) return;
       }

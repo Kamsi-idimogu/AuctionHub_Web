@@ -28,6 +28,25 @@ import { viewListing } from "@/pages/api/seller/seller-api";
 import { useWebSocket } from "@/contexts/wsContext";
 import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
 
+export interface WatchListResponse {
+  id: number;
+  name: string;
+  description: string;
+  image_url: string;
+  decrement_amount: number;
+  auctionType: AuctionType;
+  current_bid_price: number;
+  end_time: string;
+  listing_item_id: number;
+  seller_id: number;
+  starting_bid_price: number;
+  status: AuctionStatus;
+}
+
+type AuctionType = "dutch" | "forward";
+
+type AuctionStatus = "highest bidder" | "outbid" | "watching";
+
 const Profile: React.FC = () => {
   const router = useRouter();
 
@@ -44,8 +63,6 @@ const Profile: React.FC = () => {
       if (user) setProfile(user);
     }
   }, [user]);
-
-  const getUserListings = async () => {};
 
   const CardGroupTitle = profile?.role === "seller" ? "Your Listings" : "Watchlist";
 
@@ -80,11 +97,12 @@ const Profile: React.FC = () => {
   };
 
   const [listingItems, setListingItems] = useState<ListingResponse[]>([]);
+  const [watchListItems, setWatchListItems] = useState<WatchListResponse[]>([]);
 
-  const { socket, connectToSocket, disconnectSocket } = useWebSocket();
+  const { connectToSocket, disconnectSocket } = useWebSocket();
 
   useEffect(() => {
-    connectToSocket();
+    const socket = connectToSocket();
 
     const fetchInitialBidItems = async () => {
       const response = await viewListing();
@@ -95,34 +113,46 @@ const Profile: React.FC = () => {
     fetchInitialBidItems();
 
     socket?.on(LISTEN_FOR_BID_EVENT, (data) => {
-      // Data should contain the item ID and the new bid amount
-      const { listing_item_id, bid_amount } = data.data;
+      const { listing_item_id, current_bid_price } = data?.data;
 
-      // Update the bid item with the new bid
-      setListingItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
-        )
-      );
-      console.log("listening for bid event");
+      const bid_amount = current_bid_price;
+
+      /// check for roles TODO
+
+      if (profile?.role === "seller") {
+        setListingItems((prevItems) =>
+          prevItems.map((item) =>
+            item.listing_item_id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
+          )
+        );
+      } else {
+        setWatchListItems((prevItems) =>
+          prevItems.map((item) =>
+            item.id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
+          )
+        );
+      }
+      ///
+
+      console.log("listening for bid event", listing_item_id, bid_amount);
     });
 
     return () => {
       socket?.off(LISTEN_FOR_BID_EVENT);
       disconnectSocket();
     };
-  }, []);
+  }, [connectToSocket, disconnectSocket, profile?.role]);
 
-  function placeBid() {
-    const bidData = {
-      listing_item_id: 1,
-      bid_amount: 350,
-      bidder_id: 1,
-    };
-    console.log("Placing bid");
+  //   function placeBid() {
+  //     const bidData = {
+  //       listing_item_id: 1,
+  //       bid_amount: 350,
+  //       bidder_id: 1,
+  //     };
+  //     console.log("Placing bid");
 
-    socket?.emit(PLACE_BID_EVENT, bidData);
-  }
+  //     socket?.emit(PLACE_BID_EVENT, bidData);
+  //   }
 
   if (!profile) {
     return <div>Loading...</div>;
@@ -244,13 +274,22 @@ const Profile: React.FC = () => {
           </div>
         </div>
         <div className={styles.watchlistContainer}>
-          {listingItems.map((item) => (
-            <ListingCard
-              key={item.id}
-              auction={item}
-              backgroundColor={getCardBackgroundColor(item.status || "")}
-            />
-          ))}
+          {profile?.role === "seller"
+            ? listingItems?.map((item) => (
+                <ListingCard
+                  key={item.listing_item_id}
+                  auction={item}
+                  backgroundColor={getCardBackgroundColor(item.status)}
+                  wantTime={item.status !== "sold" && item.status !== "expired"}
+                />
+              ))
+            : watchListItems?.map((item) => (
+                <ListingCard
+                  key={item.listing_item_id}
+                  auction={item}
+                  backgroundColor={getCardBackgroundColor(item.status)}
+                />
+              ))}
           {/* <ListingCard auction={auctions[0]} backgroundColor="#B6CDE8" />
           <ListingCard auction={auctions[0]} backgroundColor="#B6E8B8" />
           <ListingCard

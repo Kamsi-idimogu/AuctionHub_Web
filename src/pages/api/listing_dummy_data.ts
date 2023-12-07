@@ -9,7 +9,7 @@ export const listings: ListingResponse[] = [
     image_url: "https://picsum.photos/200",
     auctionType: "dutch",
     status: "ongoing",
-    currentPrice: 100,
+    current_bid_price: 100,
     end_time: "1701916799000",
   },
   {
@@ -20,7 +20,7 @@ export const listings: ListingResponse[] = [
     image_url: "https://picsum.photos/200",
     auctionType: "forward",
     status: "ongoing",
-    currentPrice: 200,
+    current_bid_price: 200,
     end_time: "1701916799000",
   },
   {
@@ -31,7 +31,7 @@ export const listings: ListingResponse[] = [
     image_url: "https://picsum.photos/200",
     auctionType: "dutch",
     status: "ongoing",
-    currentPrice: 300,
+    current_bid_price: 300,
     end_time: "1701916799000",
   },
   {
@@ -42,7 +42,7 @@ export const listings: ListingResponse[] = [
     image_url: "https://picsum.photos/200",
     auctionType: "forward",
     status: "ongoing",
-    currentPrice: 400,
+    current_bid_price: 400,
     end_time: "1701916799000",
   },
   {
@@ -53,7 +53,7 @@ export const listings: ListingResponse[] = [
     image_url: "https://picsum.photos/200",
     auctionType: "dutch",
     status: "ongoing",
-    currentPrice: 500,
+    current_bid_price: 500,
     end_time: "1701916799000",
   },
   {
@@ -64,7 +64,7 @@ export const listings: ListingResponse[] = [
     image_url: "https://picsum.photos/200",
     auctionType: "forward",
     status: "ongoing",
-    currentPrice: 600,
+    current_bid_price: 600,
     end_time: "1701916799000",
   },
 ];
