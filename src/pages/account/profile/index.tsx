@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import styles from "./styles/ProfilePage.module.css";
 import Navbar from "@/components/Navbar";
@@ -13,6 +14,7 @@ import { viewListing } from "@/pages/api/seller/seller-api";
 import { useWebSocket } from "@/contexts/wsContext";
 import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
 import { viewWatchList } from "@/pages/api/bidder/bidder-api";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 export interface WatchListResponse {
   id: number;
@@ -45,12 +47,6 @@ const Profile: React.FC = () => {
 
   const { user } = useAuthStore();
 
-  useEffect(() => {
-    if (!profile) {
-      if (user) setProfile(user);
-    }
-  }, [user]);
-
   const CardGroupTitle = profile?.role === "seller" ? "Your Listings" : "Watchlist";
 
   const CardGroupLegend =
@@ -73,6 +69,7 @@ const Profile: React.FC = () => {
     { name: "Ongoing", color: "#B6E8B8" },
     { name: "Sold", color: "#E8B6B6" },
     { name: "Expired", color: "#EEEFA7" },
+    { name: "Pending", color: "#FFCC99" },
   ];
 
   const BidderGroupLegend = [
@@ -92,6 +89,8 @@ const Profile: React.FC = () => {
         return "#E8B6B6";
       case "expired":
         return "#EEEFA7";
+      case "pending":
+        return "#FFCC99";
       default:
         return "#FFFFFF";
     }
@@ -104,7 +103,7 @@ const Profile: React.FC = () => {
       case "highest bidder":
         return "#B6CDE8";
       case "outbid":
-          return "#E8B6B6";
+        return "#E8B6B6";
       case "won":
         return "#B6E8B8";
       default:
@@ -118,6 +117,10 @@ const Profile: React.FC = () => {
   const { connectToSocket, disconnectSocket } = useWebSocket();
 
   useEffect(() => {
+    if (!profile) {
+      if (user) setProfile(user);
+    }
+
     const socket = connectToSocket();
 
     const fetchInitialBidItems = async () => {
@@ -164,7 +167,7 @@ const Profile: React.FC = () => {
       socket?.off(LISTEN_FOR_BID_EVENT);
       disconnectSocket();
     };
-  }, [connectToSocket, disconnectSocket, profile?.role]);
+  }, [connectToSocket, disconnectSocket, profile?.role, user]);
 
   const WatchlistComponents = () => {
     if (watchListItems === undefined || watchListItems === null || watchListItems.length === 0) {
@@ -185,9 +188,17 @@ const Profile: React.FC = () => {
     );
   };
 
+  function goToLoginPage() {}
+
   if (!profile) {
-    // router.push("/login");
-    return <div>Loading...</div>;
+    goToLoginPage();
+    console.log("profile, ", profile);
+
+    return (
+      <div style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center" }}>
+        <LoadingIndicator width={100} height={100} />
+      </div>
+    );
   }
 
   return (

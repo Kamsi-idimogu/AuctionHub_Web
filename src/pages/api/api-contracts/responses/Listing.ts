@@ -13,4 +13,4 @@ export type ListingResponse = {
 
 type AuctionType = "dutch" | "forward";
 
-type AuctionStatus = "ongoing" | "sold" | "draft" | "expired";
+type AuctionStatus = "ongoing" | "sold" | "draft" | "expired" | "pending";

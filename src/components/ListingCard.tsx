@@ -36,6 +36,8 @@ const ListingCard = ({ auction, backgroundColor, wantTime = true }: ListingCardP
         return "#EEEFA7";
       case "outbid":
         return "#EEEFA7";
+      case "pending":
+        return "#FFCC99";
       default:
         return "#FFFFFF";
     }
