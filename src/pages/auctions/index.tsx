@@ -144,7 +144,7 @@ const AuctionsPage = () => {
     fetchInitialBidItems();
 
     socket?.on(LISTEN_FOR_BID_EVENT, (data) => {
-      const { listing_item_id, bid_amount } = data.data.data;
+      const { listing_item_id, bid_amount } = data.data;
 
       setAuctionItems((prevItems) =>
         prevItems.map((item) =>
