@@ -7,7 +7,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { ViewCatalogResponse } from "../auctions";
-import { makePayment, viewCatalog } from "../api/bidder/bidder-api";
+import { makePayment, viewCatalog, viewWatchList } from "../api/bidder/bidder-api";
 import AsyncButton from "@/components/AsyncButton";
 import Image from "next/image";
 import OrderReceipt from "../receipt";
@@ -45,18 +45,17 @@ const Checkout = () => {
 
   useEffect(() => {
     if (query?.id && typeof query.id === "string") {
-
       const fetchInitialBidItems = async () => {
         let response: any;
         try {
-          response = await viewCatalog();  
-  
+          response = await viewWatchList();
+
           const found = response.data?.find(
             (auction: any) => auction.listing_item_id === Number(query.id as string)
           );
           if (found) {
             setAuctionItem(found);
-            setTotal(found.current_bid_price + DEFAULT_SHIPPING_COST)
+            setTotal(found.current_bid_price + DEFAULT_SHIPPING_COST);
           } else {
             setPageLoading(false);
             router.push("/auctions");
@@ -68,28 +67,27 @@ const Checkout = () => {
           // setPageLoading(false);
         }
       };
-  
+
       fetchInitialBidItems();
-    }
-    else {
+    } else {
       router.push("/auctions");
     }
     setPageLoading(false);
   }, []);
 
-  if(pageLoading) {
+  if (pageLoading) {
     return (
       <div className={`${styles.loading_container}`}>
         <LoadingIndicator width={100} height={100} />
         <h1 className={styles.loading_text}>Loading...</h1>
-    </div>
-    )
+      </div>
+    );
   }
 
   const calculateShippingCost = () => {
     if (expiditedShipping) {
       setShippingCost(DEFAULT_SHIPPING_COST);
-      const total = auctionItem?.current_bid_price || 0
+      const total = auctionItem?.current_bid_price || 0;
       setTotal(total + DEFAULT_SHIPPING_COST);
       return;
     }
@@ -99,16 +97,16 @@ const Checkout = () => {
     const shipping_cost = Math.max(minimum_shipping_cost, calculated_shipping_cost);
     setShippingCost(shipping_cost);
     setTotal(current_bid_price + shipping_cost);
-  }
+  };
 
   const formatCurrency = (amount: number) => {
     return `$${amount.toFixed(2)}`;
-  }
+  };
 
   const handleExpeditedShippingClick = () => {
     setExpeditedShipping(!expiditedShipping);
     calculateShippingCost();
-  }
+  };
 
   const handleCardDetailsChange = (e: any) => {
     const { name, value } = e.target;
@@ -145,7 +143,7 @@ const Checkout = () => {
     try {
       const listing_id = auctionItem?.listing_item_id || -1;
       const user_id = user?.id || -1;
-      resp = await makePayment(listing_id, user_id)
+      resp = await makePayment(listing_id, user_id);
 
       if (resp?.status === "failed") {
         alert("Error occured while making payment. Please try again later.");
@@ -162,104 +160,137 @@ const Checkout = () => {
     } finally {
       setSubmitLoading(false);
     }
-  }
+  };
 
   if (showReceipt) {
     return (
-      <OrderReceipt total={total} subtotal={auctionItem?.current_bid_price} shipping={shippingCost}/>
-    )
+      <OrderReceipt
+        total={total}
+        subtotal={auctionItem?.current_bid_price}
+        shipping={shippingCost}
+      />
+    );
   }
   return (
     // <ProtectedComponent>
-      <div className={inter.className}>
-        <Navbar />
-        <div className={styles.container}>
-          <h1>Winner!</h1>
-          <p>
-            <b>Congratulations {user?.first_name}, </b> You have won the auction for the {auctionItem?.name}, please
-            fill in your payment information
-          </p>
-          <div className={styles.checkout_details}>
-            <section className={styles.shipping_payment}>
-              <p>
-                <b>First Name: </b>{user?.first_name}
-              </p>
-              <p>
-                <b>Last Name: </b>{user?.last_name}
-              </p>
-              <p>
-                <b>Address: </b>{`${user?.street_number}, ${user?.street_name}`}
-              </p>
-              <p>
-                <b>City: </b>{user?.city}
-              </p>
-              <p>
-                <b>Country: </b>{user?.country}
-              </p>
-              <p>
-                <b>Postal Code: </b>{user?.postal_code}
-              </p>
+    <div className={inter.className}>
+      <Navbar />
+      <div className={styles.container}>
+        <h1>Winner!</h1>
+        <p>
+          <b>Congratulations {user?.first_name}, </b> You have won the auction for the{" "}
+          {auctionItem?.name}, please fill in your payment information
+        </p>
+        <div className={styles.checkout_details}>
+          <section className={styles.shipping_payment}>
+            <p>
+              <b>First Name: </b>
+              {user?.first_name}
+            </p>
+            <p>
+              <b>Last Name: </b>
+              {user?.last_name}
+            </p>
+            <p>
+              <b>Address: </b>
+              {`${user?.street_number}, ${user?.street_name}`}
+            </p>
+            <p>
+              <b>City: </b>
+              {user?.city}
+            </p>
+            <p>
+              <b>Country: </b>
+              {user?.country}
+            </p>
+            <p>
+              <b>Postal Code: </b>
+              {user?.postal_code}
+            </p>
 
-              <form className={styles.form}>
-                <div className={styles.card_number_details}>
-                  <label>Credit Card Number</label>
-                  <input type="text" name="card_number" placeholder="0000-0000-0000-0000" value={cardDetails.card_number} onChange={handleCardDetailsChange}/>
-                </div>
-                <div className={styles.card_details}>
-                  <div className={styles.card_details_left}>
-                    <label>Expiration Date</label>
-                    <input type="text" name="expiration_date" placeholder="MMYY" value={cardDetails.expiration_date} onChange={handleCardDetailsChange}/>
-                  </div>
-                  <div className={styles.card_details_right}>
-                    <label>CVV</label>
-                    <input type="text" name="cvv" placeholder="000" value={cardDetails.cvv} onChange={handleCardDetailsChange}/>
-                  </div>
-                </div>
-                <div className={`${styles.error_label} ${errorMessage && styles.active}`}>
-                  {errorMessage || "Invalid card details"}
-                </div>
-                <AsyncButton onClick={hanldeCheckout} className={styles.submit_btn} isLoading={submitLoading}>
-                  Submit
-                </AsyncButton>
-              </form>
-            </section>
-            <section className={styles.order_summary}>
-              <h1>Total</h1>
-              <div className={styles.order_item}>
-                <p>{auctionItem?.name}</p>
-                {auctionItem && (
-                <Image 
-                  src={auctionItem.image_url} 
-                  alt="auction-item" 
-                  width={200} 
-                  height={190} 
+            <form className={styles.form}>
+              <div className={styles.card_number_details}>
+                <label>Credit Card Number</label>
+                <input
+                  type="text"
+                  name="card_number"
+                  placeholder="0000-0000-0000-0000"
+                  value={cardDetails.card_number}
+                  onChange={handleCardDetailsChange}
                 />
-                )}
               </div>
-              <aside className={styles.order_prices}>
-                <p>Subtotal:</p>
-                <p>{formatCurrency(auctionItem?.current_bid_price || 0)}</p>
-              </aside>
-              <aside className={styles.order_prices}>
-                <p>{expiditedShipping ? "Expedited Shipping" : "Shipping:" }</p>
-                <p>{formatCurrency(shippingCost)}</p>
-              </aside>
-              <aside className={styles.order_prices}>
-                <p>
-                  <b>Total:</b>
-                </p>
-                <p>
-                  <b>{formatCurrency(total)}</b>
-                </p>
-              </aside>
-              <label className={styles.order_checkbox}>
-                <input type="checkbox" onClick={handleExpeditedShippingClick} checked={expiditedShipping}/>
-                <i>Get Expedited Shipping</i>
-              </label>
-            </section>
-          </div>
+              <div className={styles.card_details}>
+                <div className={styles.card_details_left}>
+                  <label>Expiration Date</label>
+                  <input
+                    type="text"
+                    name="expiration_date"
+                    placeholder="MMYY"
+                    value={cardDetails.expiration_date}
+                    onChange={handleCardDetailsChange}
+                  />
+                </div>
+                <div className={styles.card_details_right}>
+                  <label>CVV</label>
+                  <input
+                    type="text"
+                    name="cvv"
+                    placeholder="000"
+                    value={cardDetails.cvv}
+                    onChange={handleCardDetailsChange}
+                  />
+                </div>
+              </div>
+              <div className={`${styles.error_label} ${errorMessage && styles.active}`}>
+                {errorMessage || "Invalid card details"}
+              </div>
+              <AsyncButton
+                onClick={hanldeCheckout}
+                className={styles.submit_btn}
+                isLoading={submitLoading}
+              >
+                Submit
+              </AsyncButton>
+            </form>
+          </section>
+          <section className={styles.order_summary}>
+            <h1>Total</h1>
+            <div className={styles.order_item}>
+              <p>{auctionItem?.name}</p>
+              {auctionItem && (
+                <Image src={auctionItem.image_url} alt="auction-item" width={200} height={190} />
+              )}
+            </div>
+            <aside className={styles.order_prices}>
+              <p>Subtotal:</p>
+              <p>{formatCurrency(auctionItem?.current_bid_price || 0)}</p>
+            </aside>
+            <aside className={styles.order_prices}>
+              <p>{expiditedShipping ? "Expedited Shipping" : "Shipping:"}</p>
+              <p>{formatCurrency(shippingCost)}</p>
+            </aside>
+            <aside className={styles.order_prices}>
+              <p>
+                <b>Total:</b>
+              </p>
+              <p>
+                <b>{formatCurrency(total)}</b>
+              </p>
+            </aside>
+            <label className={styles.order_checkbox}>
+              <input
+                type="checkbox"
+                // onClick={handleExpeditedShippingClick}
+                checked={expiditedShipping}
+                onChange={handleExpeditedShippingClick}
+                defaultChecked={expiditedShipping}
+              />
+              <i>Get Expedited Shipping</i>
+            </label>
+          </section>
         </div>
       </div>
+    </div>
     // </ProtectedComponent>
   );
 };
