@@ -73,6 +73,10 @@ const Login = () => {
       setErrorMessage("Password is required");
       return false;
     }
+    if (password.length < 8) {
+      setErrorMessage("Password must be at least 8 characters");
+      return false;
+    }
     return true;
   };
 
@@ -96,10 +100,14 @@ const Login = () => {
 
   const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
+
+    setErrorMessage("");
   };
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+
+    setErrorMessage("");
   };
 
   useEffect(() => {

@@ -71,7 +71,7 @@ const SignUp = () => {
       firstName: formData.firstName === "" ? "First name is required" : "",
       lastName: formData.lastName === "" ? "Last name is required" : "",
       username: formData.username === "" ? "Username is required" : "",
-      password: formData.password === "" ? "Password is required" : "",
+      password: formData.password === "" ? "Password is required" : formData.password.length < 8 ? "Password must be at least 8 characters" : "",
       email:
         formData.email === ""
           ? "Email is required"

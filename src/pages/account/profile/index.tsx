@@ -12,6 +12,7 @@ import { User } from "@/dto";
 import { viewListing } from "@/pages/api/seller/seller-api";
 import { useWebSocket } from "@/contexts/wsContext";
 import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
+import { viewWatchList } from "@/pages/api/bidder/bidder-api";
 
 export interface WatchListResponse {
   id: number;
@@ -26,6 +27,7 @@ export interface WatchListResponse {
   seller_id: number;
   starting_bid_price: number;
   status: AuctionStatus;
+  has_been_sold: boolean;
 }
 
 type AuctionType = "dutch" | "forward";
@@ -111,6 +113,14 @@ const Profile: React.FC = () => {
 
     fetchInitialBidItems();
 
+    const fetchInitialWatchListItems = async () => {
+      const response = await viewWatchList();
+
+      setWatchListItems(response.data);
+    };
+
+    fetchInitialWatchListItems();
+
     socket?.on(LISTEN_FOR_BID_EVENT, (data) => {
       const { listing_item_id, current_bid_price } = data?.data;
 
@@ -122,14 +132,14 @@ const Profile: React.FC = () => {
             item.listing_item_id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
           )
         );
-      } else {
+      } 
+      // else {
         setWatchListItems((prevItems) =>
           prevItems.map((item) =>
             item.id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
           )
         );
-      }
-      ///
+      // }
 
       console.log("listening for bid event", listing_item_id, bid_amount);
     });
@@ -141,7 +151,7 @@ const Profile: React.FC = () => {
   }, [connectToSocket, disconnectSocket, profile?.role]);
 
   const WatchlistComponents = () => {
-    if (watchListItems === undefined || watchListItems.length === 0) {
+    if (watchListItems === undefined || watchListItems === null || watchListItems.length === 0) {
       return <h3 className={styles.info_subheading}>You have no items in your watchlist</h3>;
     }
 
