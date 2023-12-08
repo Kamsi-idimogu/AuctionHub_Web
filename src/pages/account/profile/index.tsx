@@ -20,19 +20,19 @@ export interface WatchListResponse {
   description: string;
   image_url: string;
   decrement_amount: number;
-  auctionType: AuctionType;
+  auction_type: AuctionType;
   current_bid_price: number;
   end_time: string;
   listing_item_id: number;
   seller_id: number;
   starting_bid_price: number;
-  status: AuctionStatus;
+  status: WatchListAuctionStatus;
   has_been_sold: boolean;
 }
 
 type AuctionType = "dutch" | "forward";
 
-type AuctionStatus = "highest bidder" | "outbid" | "watching";
+type WatchListAuctionStatus = "watching" | "highest bidder" | "outbid" | "won";
 
 const Profile: React.FC = () => {
   const router = useRouter();
@@ -67,7 +67,7 @@ const Profile: React.FC = () => {
           { name: "Outbid", color: "#E8B6B6" },
           { name: "Won", color: "#EEEFA7" },
         ];
-  
+
   const SellerGroupLegend = [
     { name: "Draft", color: "#B6CDE8" },
     { name: "Ongoing", color: "#B6E8B8" },
@@ -83,12 +83,13 @@ const Profile: React.FC = () => {
   ];
 
   const getCardBackgroundColor = (status: string) => {
+    console.log("status: ", status);
     switch (status) {
       case "draft" || "watching":
         return "#B6CDE8";
       case "ongoing" || "highest bidder":
         return "#B6E8B8";
-      case "sold" || "won":
+      case "won" || "sold":
         return "#E8B6B6";
       case "expired" || "outbid":
         return "#EEEFA7";
@@ -115,6 +116,7 @@ const Profile: React.FC = () => {
 
     const fetchInitialWatchListItems = async () => {
       const response = await viewWatchList();
+      console.table(response.data);
 
       setWatchListItems(response.data);
     };
@@ -132,13 +134,13 @@ const Profile: React.FC = () => {
             item.listing_item_id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
           )
         );
-      } 
+      }
       // else {
-        setWatchListItems((prevItems) =>
-          prevItems.map((item) =>
-            item.id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
-          )
-        );
+      setWatchListItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === listing_item_id ? { ...item, currentPrice: bid_amount } : item
+        )
+      );
       // }
 
       console.log("listening for bid event", listing_item_id, bid_amount);
@@ -166,7 +168,7 @@ const Profile: React.FC = () => {
         ))}
       </div>
     );
-  }
+  };
 
   if (!profile) {
     return <div>Loading...</div>;
@@ -260,34 +262,34 @@ const Profile: React.FC = () => {
           </div>
         </div>
 
-        { profile?.role === "seller" && (
+        {profile?.role === "seller" && (
           <>
-          <div className={styles.watchlistTitle}>
-            <h3>Your Listings</h3>
-            <div className={styles.watchlistLegend}>
-              {SellerGroupLegend.map((legendItem, index) => (
-                <span className={styles.watchlistLegendItem} key={index}>
-                  <div
-                    className={styles.watchlistLegendColor}
-                    style={{ backgroundColor: legendItem.color }}
-                  />
-                  <span className={styles.watchlistLegendText}>{legendItem.name}</span>
-                </span>
-              ))}
+            <div className={styles.watchlistTitle}>
+              <h3>Your Listings</h3>
+              <div className={styles.watchlistLegend}>
+                {SellerGroupLegend.map((legendItem, index) => (
+                  <span className={styles.watchlistLegendItem} key={index}>
+                    <div
+                      className={styles.watchlistLegendColor}
+                      style={{ backgroundColor: legendItem.color }}
+                    />
+                    <span className={styles.watchlistLegendText}>{legendItem.name}</span>
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
-        <div className={styles.watchlistContainer}>
-          {listingItems?.map((item) => (
+            <div className={styles.watchlistContainer}>
+              {listingItems?.map((item) => (
                 <ListingCard
                   key={item.listing_item_id}
                   auction={item}
                   backgroundColor={getCardBackgroundColor(item.status)}
                   wantTime={item.status !== "sold" && item.status !== "expired"}
                 />
-           ))}
-          <CreateListingCard />
-        </div>
-        </>
+              ))}
+              <CreateListingCard />
+            </div>
+          </>
         )}
         <div className={styles.watchlistTitle}>
           <h3>Watchlist</h3>
@@ -303,8 +305,7 @@ const Profile: React.FC = () => {
             ))}
           </div>
         </div>
-        { WatchlistComponents() }
-        
+        {WatchlistComponents()}
       </div>
     </ProtectedComponent>
   );

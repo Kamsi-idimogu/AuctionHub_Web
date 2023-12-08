@@ -96,7 +96,8 @@ const ListingCard = ({ auction, backgroundColor, wantTime = true }: ListingCardP
           <p className={styles.auction_description_text}>{truncatedDescription}</p>
 
           <p>
-            Auction Type: <span>{auction.auctionType}</span>
+            Auction Type:{" "}
+            <span style={{ textTransform: "capitalize" }}>{auction.auction_type}</span>
           </p>
         </div>
         <div className={styles.auction_time_and_bid}>

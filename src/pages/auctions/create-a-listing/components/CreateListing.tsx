@@ -39,7 +39,7 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
     description: "",
     image_name: "",
     image_url: "",
-    auctionType: "forward",
+    auction_type: "forward",
     status: "draft",
     current_bid_price: 0,
     end_time: "",

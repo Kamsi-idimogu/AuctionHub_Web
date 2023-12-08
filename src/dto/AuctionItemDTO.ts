@@ -6,7 +6,7 @@ export type AuctionItem = {
   imageUrl: string;
   startingPrice: number | undefined;
   currentPrice: number;
-  auctionType: AuctionType | undefined;
+  auction_type: AuctionType | undefined;
   auctionStartTime?: Date;
   auctionEndTime?: Date;
   auctionStatus?: AuctionStatus;
@@ -24,7 +24,7 @@ export type ListingItem = {
   name: string;
   description: string;
   image_url: string;
-  auctionType: AuctionType;
+  auction_type: AuctionType;
   status: AuctionStatus;
   currentPrice: number;
   auctionEndTime: string;

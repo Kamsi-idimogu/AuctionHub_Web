@@ -10,7 +10,7 @@ export const auctions: AuctionItem[] = [
     imageUrl: "/images/dummy-product.png",
     startingPrice: 100,
     currentPrice: 150,
-    auctionType: "Forward",
+    auction_type: "Forward",
   },
   {
     id: "forward_2",
@@ -21,7 +21,7 @@ export const auctions: AuctionItem[] = [
     imageUrl: "/images/dummy-product.png",
     startingPrice: 100,
     currentPrice: 150,
-    auctionType: "Forward",
+    auction_type: "Forward",
   },
   {
     id: "dutch_1",
@@ -32,7 +32,7 @@ export const auctions: AuctionItem[] = [
     imageUrl: "/images/dummy-product.png",
     startingPrice: 100,
     currentPrice: 150,
-    auctionType: "Dutch",
+    auction_type: "Dutch",
   },
   {
     id: "dutch_2",
@@ -43,7 +43,7 @@ export const auctions: AuctionItem[] = [
     imageUrl: "/images/dummy-product.png",
     startingPrice: 100,
     currentPrice: 150,
-    auctionType: "Dutch",
+    auction_type: "Dutch",
   },
   {
     id: "forward_3",
@@ -58,7 +58,7 @@ export const auctions: AuctionItem[] = [
     imageUrl: "/images/dummy-product.png",
     startingPrice: 1000,
     currentPrice: 1000,
-    auctionType: "Forward",
+    auction_type: "Forward",
   },
   {
     id: "forward_4",
@@ -69,7 +69,7 @@ export const auctions: AuctionItem[] = [
     imageUrl: "/images/dummy-product.png",
     startingPrice: 100,
     currentPrice: 150,
-    auctionType: "Forward",
+    auction_type: "Forward",
   },
   {
     id: "dutch_3",
@@ -80,7 +80,7 @@ export const auctions: AuctionItem[] = [
     imageUrl: "/images/dummy-product.png",
     startingPrice: 300,
     currentPrice: 400,
-    auctionType: "Dutch",
+    auction_type: "Dutch",
   },
   {
     id: "dutch_4",
@@ -91,6 +91,6 @@ export const auctions: AuctionItem[] = [
     imageUrl: "/images/dummy-product.png",
     startingPrice: 1000,
     currentPrice: 1000,
-    auctionType: "Dutch",
+    auction_type: "Dutch",
   },
 ];
