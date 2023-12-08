@@ -20,13 +20,21 @@ const ListingCard = ({ auction, backgroundColor, wantTime = true }: ListingCardP
 
   const getCardBackgroundColor = (status: string) => {
     switch (status) {
-      case "draft" || "watching":
+      case "draft":
         return "#B6CDE8";
-      case "ongoing" || "highest bidder":
+      case "watching":
+        return "#B6CDE8";
+      case "ongoing":
         return "#B6E8B8";
-      case "sold" || "won":
+      case "highest bidder":
+        return "#B6E8B8";
+      case "sold":
         return "#E8B6B6";
-      case "expired" || "outbid":
+      case "won":
+        return "#E8B6B6";
+      case "expired":
+        return "#EEEFA7";
+      case "outbid":
         return "#EEEFA7";
       default:
         return "#FFFFFF";
@@ -34,6 +42,11 @@ const ListingCard = ({ auction, backgroundColor, wantTime = true }: ListingCardP
   };
 
   const handleSelect = () => {
+    const watchlistItem = auction as WatchListResponse;
+    if (watchlistItem.status === "won") {
+      router.push(`/checkout?id=${watchlistItem.listing_item_id}`);
+      return;
+    }
     if (auction.listing_item_id) {
       router.push(`/auctions/${auction.listing_item_id}`);
     } else {

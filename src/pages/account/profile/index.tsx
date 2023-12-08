@@ -76,23 +76,37 @@ const Profile: React.FC = () => {
   ];
 
   const BidderGroupLegend = [
-    { name: "Watching", color: "#B6CDE8" },
-    { name: "Highest Bidder", color: "#B6E8B8" },
+    { name: "Watching", color: "#EEEFA7" },
+    { name: "Highest Bidder", color: "#B6CDE8" },
     { name: "Outbid", color: "#E8B6B6" },
-    { name: "Won", color: "#EEEFA7" },
+    { name: "Won", color: "#B6E8B8" },
   ];
 
-  const getCardBackgroundColor = (status: string) => {
-    console.log("status: ", status);
+  const getCardBackgroundColorForSeller = (status: string) => {
     switch (status) {
-      case "draft" || "watching":
+      case "draft":
         return "#B6CDE8";
-      case "ongoing" || "highest bidder":
+      case "ongoing":
         return "#B6E8B8";
-      case "won" || "sold":
+      case "sold":
         return "#E8B6B6";
-      case "expired" || "outbid":
+      case "expired":
         return "#EEEFA7";
+      default:
+        return "#FFFFFF";
+    }
+  };
+
+  const getCardBackgroundColorForBidder = (status: string) => {
+    switch (status) {
+      case "watching":
+        return "#EEEFA7";
+      case "highest bidder":
+        return "#B6CDE8";
+      case "outbid":
+          return "#E8B6B6";
+      case "won":
+        return "#B6E8B8";
       default:
         return "#FFFFFF";
     }
@@ -163,7 +177,8 @@ const Profile: React.FC = () => {
           <ListingCard
             key={item.listing_item_id}
             auction={item}
-            backgroundColor={getCardBackgroundColor(item.status)}
+            backgroundColor={getCardBackgroundColorForBidder(item.status)}
+            wantTime={item.status !== "won"}
           />
         ))}
       </div>
@@ -171,6 +186,7 @@ const Profile: React.FC = () => {
   };
 
   if (!profile) {
+    // router.push("/login");
     return <div>Loading...</div>;
   }
 
@@ -283,7 +299,7 @@ const Profile: React.FC = () => {
                 <ListingCard
                   key={item.listing_item_id}
                   auction={item}
-                  backgroundColor={getCardBackgroundColor(item.status)}
+                  backgroundColor={getCardBackgroundColorForSeller(item.status)}
                   wantTime={item.status !== "sold" && item.status !== "expired"}
                 />
               ))}

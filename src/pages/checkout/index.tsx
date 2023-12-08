@@ -7,10 +7,11 @@ import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { ViewCatalogResponse } from "../auctions";
-import { viewCatalog } from "../api/bidder/bidder-api";
+import { makePayment, viewCatalog } from "../api/bidder/bidder-api";
 import AsyncButton from "@/components/AsyncButton";
 import Image from "next/image";
 import OrderReceipt from "../receipt";
+import { WatchListResponse } from "../account/profile";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
@@ -23,7 +24,7 @@ const Checkout = () => {
   const DEFAULT_SHIPPING_COST = 15;
 
   const [pageLoading, setPageLoading] = useState<boolean>(true);
-  const [auctionItem, setAuctionItem] = useState<ViewCatalogResponse | undefined>();
+  const [auctionItem, setAuctionItem] = useState<ViewCatalogResponse>();
   const [shippingCost, setShippingCost] = useState<number>(DEFAULT_SHIPPING_COST);
   const [expiditedShipping, setExpeditedShipping] = useState<boolean>(false);
   const [total, setTotal] = useState<number>(0);
@@ -34,6 +35,7 @@ const Checkout = () => {
   });
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [showReceipt, setShowReceipt] = useState<boolean>(false);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   // useEffect(() => {
   //   // check if payments have been made
@@ -43,7 +45,6 @@ const Checkout = () => {
 
   useEffect(() => {
     if (query?.id && typeof query.id === "string") {
-      console.log("query", query?.id);
 
       const fetchInitialBidItems = async () => {
         let response: any;
@@ -55,29 +56,41 @@ const Checkout = () => {
           );
           if (found) {
             setAuctionItem(found);
+            setTotal(found.current_bid_price + DEFAULT_SHIPPING_COST)
           } else {
-            // router.push("/auctions");
-            console.log("not found");
+            setPageLoading(false);
+            router.push("/auctions");
           }
-          setPageLoading(false);
         } catch (error) {
           console.log(error);
           return;
+        } finally {
+          // setPageLoading(false);
         }
       };
   
       fetchInitialBidItems();
     }
     else {
-      // router.push("/auctions");
+      router.push("/auctions");
     }
     setPageLoading(false);
-  }, [query]);
+  }, []);
+
+  if(pageLoading) {
+    return (
+      <div className={`${styles.loading_container}`}>
+        <LoadingIndicator width={100} height={100} />
+        <h1 className={styles.loading_text}>Loading...</h1>
+    </div>
+    )
+  }
 
   const calculateShippingCost = () => {
     if (expiditedShipping) {
       setShippingCost(DEFAULT_SHIPPING_COST);
-      setTotal(auctionItem?.current_bid_price || 0 + DEFAULT_SHIPPING_COST);
+      const total = auctionItem?.current_bid_price || 0
+      setTotal(total + DEFAULT_SHIPPING_COST);
       return;
     }
     const minimum_shipping_cost = 25;
@@ -126,21 +139,30 @@ const Checkout = () => {
     if (!validateCardDetails()) {
       return;
     }
-    // console.table(cardDetails);
-    // const response = await checkout();
-    // if (response.status === 200) {
-    //   router.push("/account/profile");
-    // }
-    // router.push(`/receipt?id=${auctionItem?.listing_item_id}`)
-    setShowReceipt(true);
-  }
+    setSubmitLoading(true);
+    let resp: any;
 
-  const loadingComponent = (
-    <div className={`${styles.loading_container}`}>
-      <LoadingIndicator width={100} height={100} />
-      <h1 className={styles.loading_text}>Loading...</h1>
-    </div>
-  );
+    try {
+      const listing_id = auctionItem?.listing_item_id || -1;
+      const user_id = user?.id || -1;
+      resp = await makePayment(listing_id, user_id)
+
+      if (resp?.status === "failed") {
+        alert("Error occured while making payment. Please try again later.");
+        setErrorMessage("Error occured while making payment. Please try again later.");
+        return;
+      }
+
+      if (resp?.status === false) return;
+
+      setShowReceipt(true);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage("Error occured while making payment. Please try again later.");
+    } finally {
+      setSubmitLoading(false);
+    }
+  }
 
   if (showReceipt) {
     return (
@@ -151,7 +173,6 @@ const Checkout = () => {
     // <ProtectedComponent>
       <div className={inter.className}>
         <Navbar />
-        {pageLoading ? loadingComponent : (
         <div className={styles.container}>
           <h1>Winner!</h1>
           <p>
@@ -197,7 +218,7 @@ const Checkout = () => {
                 <div className={`${styles.error_label} ${errorMessage && styles.active}`}>
                   {errorMessage || "Invalid card details"}
                 </div>
-                <AsyncButton onClick={hanldeCheckout} className={styles.submit_btn} isLoading={false}>
+                <AsyncButton onClick={hanldeCheckout} className={styles.submit_btn} isLoading={submitLoading}>
                   Submit
                 </AsyncButton>
               </form>
@@ -206,20 +227,21 @@ const Checkout = () => {
               <h1>Total</h1>
               <div className={styles.order_item}>
                 <p>{auctionItem?.name}</p>
+                {auctionItem && (
                 <Image 
-                  src={auctionItem?.image_url || "/images/dummy-product.png"} 
+                  src={auctionItem.image_url} 
                   alt="auction-item" 
-                  width={125} 
-                  height={115} 
-                  // className={styles.image_placeholder}
+                  width={200} 
+                  height={190} 
                 />
+                )}
               </div>
               <aside className={styles.order_prices}>
                 <p>Subtotal:</p>
                 <p>{formatCurrency(auctionItem?.current_bid_price || 0)}</p>
               </aside>
               <aside className={styles.order_prices}>
-                <p>Shipping:</p>
+                <p>{expiditedShipping ? "Expedited Shipping" : "Shipping:" }</p>
                 <p>{formatCurrency(shippingCost)}</p>
               </aside>
               <aside className={styles.order_prices}>
@@ -232,12 +254,11 @@ const Checkout = () => {
               </aside>
               <label className={styles.order_checkbox}>
                 <input type="checkbox" onClick={handleExpeditedShippingClick} checked={expiditedShipping}/>
-                <i>Expedited Shipping: $25</i>
+                <i>Get Expedited Shipping</i>
               </label>
             </section>
           </div>
         </div>
-        )}
       </div>
     // </ProtectedComponent>
   );
