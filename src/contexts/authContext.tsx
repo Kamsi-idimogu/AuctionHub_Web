@@ -75,9 +75,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isLoggedIn = useAuthStore(state => state.isLoggedIn);
   const login = useAuthStore(state => state.login);
   const logout = useAuthStore(state => state.logout);
+  const rehydrate = useAuthStore(state => state.rehydrate);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoggedIn }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoggedIn, rehydrate }}>
       {children}
     </AuthContext.Provider>
   );
