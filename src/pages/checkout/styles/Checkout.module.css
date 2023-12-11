@@ -1,139 +1,174 @@
-.container{
-    max-width: 1080px;
-    margin: 2rem auto 0;
+.container {
+  max-width: 1080px;
+  margin: 2rem auto 0;
+  padding-bottom: 4rem;
 }
 
 .container h1 {
-    font-size: 74px;
-    font-weight: 700;
+  font-size: 74px;
+  font-weight: 700;
 }
 
 .container > p {
-    font-size: 28px;
-    max-width: 755px;
-    line-height: 1.5;
+  font-size: 28px;
+  max-width: 755px;
+  line-height: 1.5;
 }
 
 .shipping_payment > p {
-    font-size: 28px;
-    max-width: 422px;
-    line-height: 1.5;
+  font-size: 28px;
+  max-width: 422px;
+  line-height: 1.5;
 }
 
 .checkout_details {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 50px;
-    margin-left: 70px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 50px;
+  margin-left: 70px;
 }
 
 .checkout_details > form {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .checkout_details p {
-    font-size: 28px;
-    font-weight: 500;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 180%;
 }
 
-.form{
-    margin-top: 2rem;
+.form {
+  margin-top: 5rem;
 }
 
 .form label {
-    font-size: 20px;
-    font-weight: 400;
-    margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 10px;
 }
 
 .form input {
-    height: 50px;
-    border: none;
-    background-color: #D9D9D9;
-    border-radius: 12px;
-    padding: 5px 10px;
-    margin-bottom: 20px;
-    font-size: 20px;
+  height: 50px;
+  border: none;
+  background-color: #d9d9d9;
+  border-radius: 12px;
+  padding: 5px 10px;
+  margin-bottom: 20px;
+  font-size: 20px;
 }
 .form input:focus {
-    outline: none;
+  outline: none;
 }
 
-.card_number_details, .card_details_left, .card_details_right {
-    display: flex;
-    flex-direction: column;
-    max-width: 432.89px;
+.card_number_details,
+.card_details_left,
+.card_details_right {
+  display: flex;
+  flex-direction: column;
+  max-width: 432.89px;
 }
 
 .card_details {
-    display: flex;
-    justify-content: space-between;
-    width: max-content;
-    gap: 60px;
-
+  display: flex;
+  justify-content: space-between;
+  width: max-content;
+  gap: 60px;
 }
-.card_details_left, .card_details_right {
-    width: 210px;
-}
-
-.image_placeholder{
-    width: 122px;
-    height: 115px;
-    background-color: #D9D9D9;
+.card_details_left,
+.card_details_right {
+  width: 210px;
 }
 
-.order_checkbox{
-    align-self: flex-start;
-    margin-top: 20px;
-    display: flex;
-    align-items: center;
+.image_placeholder {
+  width: 125px;
+  height: 115px;
+  background-color: #d9d9d9;
+}
+
+.order_checkbox {
+  align-self: flex-start;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
 }
 
 .order_checkbox > input[type="checkbox"] {
-    width: 22px;
-    height: 22px;
-    margin-right: 15px;
-    border-radius: 2px;
+  width: 22px;
+  height: 22px;
+  margin-right: 15px;
+  border-radius: 2px;
 }
 
 .order_checkbox > i {
-    font-size: 26px;
-    font-weight: 500;
+  font-size: 26px;
+  font-weight: 500;
 }
 
-.order_summary{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+.order_summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
-.order_item{
-    display: flex;
-    gap: 60px;
-    align-items: center;
-    margin-bottom: 20px;
+.order_item {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.order_prices{
-    display: flex;
-    justify-content: space-between;
-    width: 422px;
-    margin-bottom: 10px;
+.order_prices {
+  display: flex;
+  justify-content: space-between;
+  width: 422px;
+  margin-bottom: 10px;
 }
 
-.form button {
-    width: 167px;
-    border: none;
-    border-radius: 18px;
-    background-color: #A3F8A1;
-    font-size: 20px;
-    font-weight: 700;
-    color: #000000;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    padding: 1.2rem 1rem;
-    margin-top: 1rem;
+.submit_btn {
+  width: 167px;
+  height: 55px;
+  border: none;
+  border-radius: 18px;
+  background-color: #a3f8a1;
+  font-size: 20px;
+  font-weight: 700;
+  color: #000000;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  padding: 1.2rem 1rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.loading_container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.loading_text{
+  font-size: 54px;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  line-height: 1;
+}
+
+.error_label{
+  color: red;
+  font-size: 1.2rem;
+  font-style: italic;
+  visibility: hidden;
+}
+
+.error_label.active{
+  visibility: visible;
+}

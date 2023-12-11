@@ -26,4 +26,16 @@ export const CHECKOUT_ENDPOINT = `${BASE_HTTP_URL}/checkout`;
 
 export const VIEW_BIDDING_HISTORY_ENDPOINT = `${BASE_HTTP_URL}/view-bidding-history`;
 
+export const MAKE_PAYMENT_ENDPOINT = `${BASE_HTTP_URL}/checkout`;
+
 export const BID_ENPOINT = `${BASE_WS_URL}/bid`;
+
+export const PLACE_BID_EVENT = "place-bid";
+
+export const LISTEN_FOR_BID_EVENT = "bid";
+
+export const LISTEN_FOR_EXCEPTION_EVENT = "exception";
+
+export const LISTEN_FOR_BID_ERROR_EVENT = "bidError";
+
+export const LISTEN_FOR_DECREMENT_BID_EVENT = "decrementBidPrice";

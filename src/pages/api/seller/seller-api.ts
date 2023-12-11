@@ -22,7 +22,7 @@ export const createListing = async (formData: any): Promise<payload> => {
       end_time: formData.duration,
     };
 
-    console.table(listingPayload);
+    // console.table(listingPayload);
 
     const resp = await axios.post(
       CREATE_LISTING_ENDPOINT,
@@ -37,7 +37,7 @@ export const createListing = async (formData: any): Promise<payload> => {
       }
     );
 
-    console.log("response:", resp);
+    // console.log("response:", resp);
 
     return {
       status: resp.data.status || "success",
@@ -69,9 +69,9 @@ export const viewListing = async (): Promise<payload> => {
 
 export const startAuction = async (listing_item_id: number): Promise<payload> => {
   try {
-    const resp = await axios.post(START_AUCTION_ENDPOINT + "/" + listing_item_id, {
-      withCredentials: true,
-    });
+    const url = START_AUCTION_ENDPOINT + "/" + listing_item_id;
+
+    const resp = await axios.post(url, {}, { withCredentials: true });
 
     console.log("response:", resp);
 

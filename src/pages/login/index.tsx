@@ -37,7 +37,8 @@ const Login = () => {
         }
 
         if (resp.status === "failed") {
-          alert("Error loggin you in. Please try again later.");
+          setErrorMessage("Error occured while logging you in. Please create an account.");
+          // alert(resp.message || "Error occured while logging you in. Please try again later.");
           return;
         }
 
@@ -48,14 +49,15 @@ const Login = () => {
         const user = CreateUserFromServer(resp.data);
 
         login(user, token, expiry);
+
+        router.push(`/account/profile`);
+
+        clearAllData();
       } catch (error) {
         console.log(error);
         setErrorMessage("Error occured while logging you in. Please try again later.");
       } finally {
         setIsLoading(false);
-
-        clearAllData();
-        router.push(`/account/profile`);
 
         if (resp?.status === false) return;
       }
@@ -69,6 +71,10 @@ const Login = () => {
     }
     if (password === "") {
       setErrorMessage("Password is required");
+      return false;
+    }
+    if (password.length < 8) {
+      setErrorMessage("Password must be at least 8 characters");
       return false;
     }
     return true;
@@ -94,10 +100,14 @@ const Login = () => {
 
   const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
+
+    setErrorMessage("");
   };
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
+
+    setErrorMessage("");
   };
 
   useEffect(() => {

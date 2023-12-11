@@ -1,64 +1,147 @@
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
 import { AuctionItem } from "@/dto";
-import Image from 'next/image'
-import Button from './Button';
-import styles from '@/styles/ListingCard.module.css'
-import AuctionCountdown from './AuctionCountdown';
+import Image from "next/image";
+import Button from "./Button";
+import styles from "@/styles/ListingCard.module.css";
+import AuctionCountdown from "./AuctionCountdown";
+import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
+import { WatchListResponse } from "@/pages/account/profile";
+import { startAuction } from "@/pages/api/seller/seller-api";
+import { use, useEffect, useState } from "react";
 
 interface ListingCardProps {
-    auction: AuctionItem
-    backgroundColor?: string
-    wantTime?: boolean
+  auction: ListingResponse | WatchListResponse;
+  backgroundColor?: string;
+  wantTime?: boolean;
 }
-const ListingCard = ({ auction, backgroundColor, wantTime = true }:ListingCardProps) => {
-    const router = useRouter();
+const ListingCard = ({ auction, backgroundColor, wantTime = true }: ListingCardProps) => {
+  const router = useRouter();
+  const [color, setColor] = useState<string | undefined>(backgroundColor);
 
-    const handleSelect = () => {
-        router.push(`/auctions/${auction.id}`);
+  const getCardBackgroundColor = (status: string) => {
+    switch (status) {
+      case "draft":
+        return "#B6CDE8";
+      case "watching":
+        return "#B6CDE8";
+      case "ongoing":
+        return "#B6E8B8";
+      case "highest bidder":
+        return "#B6E8B8";
+      case "sold":
+        return "#E8B6B6";
+      case "won":
+        return "#E8B6B6";
+      case "expired":
+        return "#EEEFA7";
+      case "outbid":
+        return "#EEEFA7";
+      case "pending":
+        return "#FFCC99";
+      default:
+        return "#FFFFFF";
+    }
+  };
+
+  const handleSelect = () => {
+    const watchlistItem = auction as WatchListResponse;
+    if (watchlistItem.status === "won") {
+      router.push(`/checkout?id=${watchlistItem.listing_item_id}`);
+      return;
+    }
+    if (auction.listing_item_id) {
+      router.push(`/auctions/${auction.listing_item_id}`);
+    } else {
+      const list = auction as WatchListResponse;
+      router.push(`/auctions/${list.listing_item_id}`);
+    }
+  };
+
+  const truncateText = (text: string, wordLimit: number) => {
+    const words = text.split(" ");
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(" ") + "...";
+    }
+    return text;
+  };
+
+  // 2 hours from now in epoch
+  // const time = Date.now() + 7200000;
+  // const time = 1701661069578;
+  const time = auction.end_time;
+
+  const [isDraft, setIsDraft] = useState<boolean>(auction.status === "draft");
+
+  const handleUpload = async () => {
+    const watchlistItem = auction as WatchListResponse;
+    const resp: any = await startAuction(watchlistItem.listing_item_id);
+    if (resp === undefined) {
+      alert("Something went wrong. Please try again later");
+      return;
+    }
+    if (resp.status === "failed") {
+      alert("Error starting auction. Please try again later.");
+      return;
     }
 
-    const truncateText = (text: string, wordLimit: number) => {
-        const words = text.split(' ');
-        if (words.length > wordLimit) {
-          return words.slice(0, wordLimit).join(' ') + '...';
-        }
-        return text;
-    };
+    setIsDraft(false);
+    setColor(getCardBackgroundColor("ongoing"));
 
-    // 2 hours from now in epoch
-    // const time = Date.now() + 7200000;
-    const time = 1701661069578;
+    router.push(`/account/profile`);
+  };
 
-    const truncatedDescription = truncateText(auction.description, 20);
+  const goToEditPage = () => {
+    router.push(`/auctions/create-a-listing/${auction.listing_item_id}`);
+    // console.log("listing id: ", auction.listing_item_id);
+  };
 
-    return(
-        <div className={styles.auction_card} style={{backgroundColor}}>
-            <div className={styles.auction_image}>
-                <Image src={auction.imageUrl} alt='product_image' width={260} height={227} />
-            </div>
-            <div className={styles.auction_info}>
-                <div className={styles.auction_title_and_price}>
-                    <h3>{auction.name}</h3>
-                    <h3 style={{color: "#FF5454"}}>${auction.currentPrice}</h3>
-                </div>
-                <div className={styles.auction_description}>
-                    <p className={styles.auction_description_text}>{truncatedDescription}</p>
-            
-                    <p>Auction Type: <span>{auction.auctionType}</span></p>
-                </div>
-                <div className={styles.auction_time_and_bid}>
-                    <div className={styles.auction_buttons}>
-                        <Button onClick={handleSelect} className={styles.select_btn}><div>select</div></Button>
-                    </div>
-                    {auction.auctionStatus === "Draft" && <div className={styles.auction_buttons}>
-                        <Button onClick={handleSelect} className={styles.select_btn}><div>upload</div></Button>
-                        <Button onClick={()=>{}} className={styles.watchlist_btn}><div>edit</div></Button>
-                    </div> }
-                    <p style={wantTime ? {visibility: 'visible'} : {visibility: 'hidden'}}>Remaining Time: <span style={{color: "#FF5454"}}><AuctionCountdown endTime={time.toString()} /></span></p>
-                </div>
-            </div>
+  const truncatedDescription = truncateText(auction.description, 20);
+
+  return (
+    <div className={styles.auction_card} style={{ backgroundColor: color }}>
+      <div className={styles.auction_image}>
+        <Image src={auction.image_url} alt="product_image" width={260} height={227} />
+      </div>
+      <div className={styles.auction_info}>
+        <div className={styles.auction_title_and_price}>
+          <h3>{auction.name}</h3>
+          <h3 style={{ color: "#FF5454" }}>${auction.current_bid_price}</h3>
         </div>
-    )
-}
+        <div className={styles.auction_description}>
+          <p className={styles.auction_description_text}>{truncatedDescription}</p>
+
+          <p>
+            Auction Type:{" "}
+            <span style={{ textTransform: "capitalize" }}>{auction.auction_type}</span>
+          </p>
+        </div>
+        <div className={styles.auction_time_and_bid}>
+          {!isDraft ? (
+            <div className={styles.auction_buttons}>
+              <Button onClick={handleSelect} className={styles.select_btn}>
+                <div>select</div>
+              </Button>
+            </div>
+          ) : (
+            <div className={styles.auction_buttons}>
+              <Button onClick={handleUpload} className={styles.select_btn}>
+                <div>upload</div>
+              </Button>
+              <Button onClick={goToEditPage} className={styles.watchlist_btn}>
+                <div>edit</div>
+              </Button>
+            </div>
+          )}
+          <p style={wantTime ? { visibility: "visible" } : { visibility: "hidden" }}>
+            Remaining Time:{" "}
+            <span style={{ color: "#FF5454" }}>
+              <AuctionCountdown endTime={time.toString()} />
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default ListingCard;
