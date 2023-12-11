@@ -24,7 +24,7 @@ export const userRegistration = async (formData: any): Promise<payload> => {
       isSeller: formData.isSeller,
     };
 
-    const resp = await axios.post(REGISTER_ENDPOINT, { ...userPayload });
+    const resp = await axios.post(REGISTER_ENDPOINT, { ...userPayload }, { withCredentials: true });
 
     console.log("response:", resp);
 
