@@ -74,6 +74,7 @@ const Checkout = () => {
     }
     setPageLoading(false);
   }, []);
+  // }, [router, query?.id]);
 
   if (pageLoading) {
     return (
