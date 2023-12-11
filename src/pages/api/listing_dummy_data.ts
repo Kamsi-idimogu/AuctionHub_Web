@@ -2,7 +2,7 @@ import { ListingResponse } from "./api-contracts/responses/Listing";
 
 export const listings: ListingResponse[] = [
   {
-    id: 1,
+    listing_item_id: 1,
     name: "Item 1",
     description: "This is item 1",
     image_name: "item1.jpg",
@@ -13,7 +13,7 @@ export const listings: ListingResponse[] = [
     end_time: "1701916799000",
   },
   {
-    id: 2,
+    listing_item_id: 2,
     name: "Item 2",
     description: "This is item 2",
     image_name: "item2.jpg",
@@ -24,7 +24,7 @@ export const listings: ListingResponse[] = [
     end_time: "1701916799000",
   },
   {
-    id: 3,
+    listing_item_id: 3,
     name: "Item 3",
     description: "This is item 3",
     image_name: "item3.jpg",
@@ -35,7 +35,7 @@ export const listings: ListingResponse[] = [
     end_time: "1701916799000",
   },
   {
-    id: 4,
+    listing_item_id: 4,
     name: "Item 4",
     description: "This is item 4",
     image_name: "item4.jpg",
@@ -46,7 +46,7 @@ export const listings: ListingResponse[] = [
     end_time: "1701916799000",
   },
   {
-    id: 5,
+    listing_item_id: 5,
     name: "Item 5",
     description: "This is item 5",
     image_name: "item5.jpg",
@@ -57,7 +57,7 @@ export const listings: ListingResponse[] = [
     end_time: "1701916799000",
   },
   {
-    id: 6,
+    listing_item_id: 6,
     name: "Item 6",
     description: "This is item 6",
     image_name: "item6.jpg",
