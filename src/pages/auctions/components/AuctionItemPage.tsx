@@ -14,7 +14,11 @@ import { viewBiddingHistory, viewCatalog } from "@/pages/api/bidder/bidder-api";
 import AuctionCountdown from "@/components/AuctionCountdown";
 import { ViewCatalogResponse } from "..";
 import { useWebSocket } from "@/contexts/wsContext";
-import { LISTEN_FOR_BID_EVENT, PLACE_BID_EVENT } from "@/pages/api/endpoints";
+import {
+  LISTEN_FOR_BID_ERROR_EVENT,
+  LISTEN_FOR_BID_EVENT,
+  PLACE_BID_EVENT,
+} from "@/pages/api/endpoints";
 import { useAuthStore } from "@/store/authStore";
 import { Socket } from "socket.io-client";
 
@@ -151,6 +155,15 @@ const AuctionItemPage = () => {
       console.log("listening for bid event", listing_item_id, current_bid_price);
     });
 
+    socket?.on(LISTEN_FOR_BID_ERROR_EVENT, (data) => {
+      const { error } = data;
+
+      console.log("error: ", error);
+      if (error === "Bid Session Already Active") {
+        setErrorMessage(error);
+        alert(error);
+      }
+    });
     return () => {
       socket?.off(LISTEN_FOR_BID_EVENT);
       disconnectSocket();

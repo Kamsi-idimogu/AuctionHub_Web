@@ -73,7 +73,10 @@ const ImageUpload: React.FC<ImageUpload> = ({ onSubmit, inputName }) => {
             />
             +
             <br />
-            <p style={{ fontSize: "1.6rem", display: "block" }}> Click to Upload an Image</p>
+            <p style={{ fontSize: "1.4rem", display: "block", marginTop: "1.5em" }}>
+              {" "}
+              Click to Upload an Image
+            </p>
           </span>
         )}
       </div>

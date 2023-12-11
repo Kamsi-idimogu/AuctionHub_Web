@@ -167,7 +167,10 @@ const CreateListing = ({ editAuctionId }: CreateListingProps) => {
         return "Decrement Value is required";
       } else {
         if (validateNumberInput(new String(formData.decrementValue).toString())) {
-          if (formData.startingPrice && formData.decrementValue < formData.startingPrice) {
+          if (
+            formData.startingPrice &&
+            Number(formData.decrementValue) < Number(formData.startingPrice)
+          ) {
             return "";
           } else {
             return "Decrement Value must be less than the starting price";
