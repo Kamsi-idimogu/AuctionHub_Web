@@ -1,276 +1,499 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { Inter } from 'next/font/google';
-import styles from '../styles/CreateListing.module.css';
-import Navbar from '@/components/Navbar';
-import { AuctionItem } from '@/dto';
-import { auctions } from '@/pages/api/auction_item_dummy_data';
-import router from 'next/router';
-import AsyncButton from '@/components/AsyncButton';
+import { useState, useEffect } from "react";
+import { Inter } from "next/font/google";
+import styles from "../styles/CreateListing.module.css";
+import Navbar from "@/components/Navbar";
+import { AuctionItem } from "@/dto";
+import { auctions } from "@/pages/api/auction_item_dummy_data";
+// import { listings } from "@/pages/api/listing_dummy_data";
+import router from "next/router";
+import AsyncButton from "@/components/AsyncButton";
+import { createListing, startAuction, viewListing } from "@/pages/api/seller/seller-api";
+import ImageUpload from "./ImageUpload";
+import { ListingRequest } from "@/pages/api/api-contracts/requests/Listing";
+import { ListingResponse } from "@/pages/api/api-contracts/responses/Listing";
+import { WatchListResponse } from "@/pages/account/profile";
 
-const inter = Inter({ subsets: ['latin'], weight: ["400", "500", "600", "700", "800", "900"] })
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
 
 interface CreateListingProps {
-    editAuctionId?: string | string[];
+  editAuctionId?: string | string[];
 }
 
-const CreateListing = ({ editAuctionId }:CreateListingProps) => {
-    const [auctionItem, setAuctionItem] = useState<AuctionItem>({
-        id: "",
-        name: "",
-        description: "",
-        imageUrl: "",
-        startingPrice: undefined,
-        reservePrice: undefined,
-        currentPrice: undefined,
-        auctionType: "Unset",
-        auctionStartTime: new Date(),
-        auctionEndTime: new Date(),
-        auctionStatus: "Open"
+export interface ListingFormData {
+  name: string;
+  description: string;
+  image: File | null;
+  auctionType: string;
+  keyword1: string;
+  keyword2: string;
+  keyword3: string;
+  startingPrice: number | undefined;
+  duration: number | undefined;
+  decrementValue: number | undefined;
+}
+const CreateListing = ({ editAuctionId }: CreateListingProps) => {
+  const [auctionItem, setAuctionItem] = useState<ListingResponse>({
+    listing_item_id: 0,
+    name: "",
+    description: "",
+    image_name: "",
+    image_url: "",
+    auction_type: "forward",
+    status: "draft",
+    current_bid_price: 0,
+    end_time: "",
+  });
+
+  const [auctionImage, setAuctionImage] = useState<File | null>(null);
+
+  const [formData, setFormData] = useState<ListingFormData>({
+    name: "",
+    description: "",
+    image: null,
+    auctionType: "",
+    keyword1: "",
+    keyword2: "",
+    keyword3: "",
+    startingPrice: undefined, // only for forward auctions
+    duration: undefined, // only for dutch auctions
+    decrementValue: undefined, // only for dutch auctions
+  });
+
+  const [listings, setListings] = useState<ListingResponse[]>([]);
+
+  const [errorMessages, setErrorMessages] = useState({
+    name: "",
+    description: "",
+    image: "",
+    startingPrice: "",
+    auctionType: "",
+    duration: "",
+    decrementValue: "",
+    keyword1: "",
+    keyword2: "",
+    keyword3: "",
+  });
+  const [displayErrorMessage, setDisplayErrorMessage] = useState<string>("");
+
+  const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
+  const [isSaveDraftLoading, setIsSaveDraftLoading] = useState<boolean>(false);
+
+  const findAuctionItem = (list: ListingResponse[], id: string) => {
+    const listing = list.find((listing) => listing.listing_item_id === Number(id));
+    console.log("listing: ", listing);
+    if (listing) {
+      setAuctionItem(listing);
+    }
+  };
+
+  useEffect(() => {
+    let resp: any;
+    const getListings = async () => {
+      resp = await viewListing();
+      try {
+        if (resp?.status === "failed") {
+          alert("Error occured while fetching listings. Please try again later.");
+          return;
+        }
+
+        if (resp?.status === false) return;
+
+        if (typeof editAuctionId === "string") {
+          const data = resp?.data as ListingResponse[];
+
+          if (data) {
+            findAuctionItem(resp?.data, editAuctionId);
+          }
+        }
+        console.log("listings: ", resp);
+
+        setListings(resp?.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getListings();
+  }, [editAuctionId]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+
+    // clear error message when user starts typing
+    setErrorMessages((prevState) => ({
+      ...prevState,
+      [name]: "",
+    }));
+  };
+
+  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+
+    // clear error message when user starts typing
+    setErrorMessages((prevState) => ({
+      ...prevState,
+      [name]: "",
+    }));
+  };
+
+  const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+
+    // clear error message when user starts typing
+    setErrorMessages((prevState) => ({
+      ...prevState,
+      [name]: "",
+    }));
+
+    console.log(value);
+  };
+
+  const validateDecrementValue = () => {
+    if (formData.auctionType === "Dutch") {
+      if (formData.decrementValue === undefined) {
+        return "Decrement Value is required";
+      } else {
+        if (validateNumberInput(new String(formData.decrementValue).toString())) {
+          if (
+            formData.startingPrice &&
+            Number(formData.decrementValue) < Number(formData.startingPrice)
+          ) {
+            return "";
+          } else {
+            return "Decrement Value must be less than the starting price";
+          }
+        } else {
+          return "Decrement Value must be a whole number greater than 0";
+        }
+      }
+    } else {
+      return "";
+    }
+  };
+
+  const validateNumberInput = (input: string) => {
+    // check if input is a whole number greater than 0
+    const re = /^[1-9]\d*$/;
+    return re.test(input);
+  };
+
+  const validateForm = () => {
+    const newErrorMessages = {
+      name: formData.name === "" ? "Name is required" : "",
+      description: formData.description === "" ? "Description is required" : "",
+      image: formData.image === null ? "Image Upload is required" : "",
+      auctionType:
+        formData.auctionType === "" || formData.auctionType === "Unset"
+          ? "Auction Type is required"
+          : "",
+      keyword1:
+        formData.keyword1 === "" || formData.keyword1 === "category" ? "Keyword 1 is required" : "",
+      keyword2:
+        formData.keyword2 === "" || formData.keyword2 === "category" ? "Keyword 2 is required" : "",
+      keyword3:
+        formData.keyword3 === "" || formData.keyword3 === "category" ? "Keyword 3 is required" : "",
+      startingPrice:
+        formData.startingPrice === undefined
+          ? "Starting Price is required"
+          : validateNumberInput(new String(formData.startingPrice).toString())
+          ? ""
+          : "Starting Price must be a whole number greater than 0",
+      decrementValue: validateDecrementValue(),
+      duration:
+        formData.duration === undefined
+          ? "Duration is required"
+          : validateNumberInput(new String(formData.duration).toString())
+          ? ""
+          : "Duration must be provided in hours and greater than 0",
+    };
+
+    setErrorMessages(newErrorMessages);
+
+    // check if there are any error messages
+    const anyErrors = Object.values(newErrorMessages).some((errorMessage) => errorMessage !== "");
+    if (anyErrors) {
+      // set display error message to first error message seen in the object
+      const firstErrorMessage = Object.values(newErrorMessages).find(
+        (errorMessage) => errorMessage !== ""
+      );
+      if (firstErrorMessage) {
+        setDisplayErrorMessage(firstErrorMessage);
+      }
+    }
+
+    return !anyErrors;
+  };
+
+  const clearAllData = () => {
+    setFormData({
+      name: "",
+      description: "",
+      image: null,
+      auctionType: "",
+      keyword1: "",
+      keyword2: "",
+      keyword3: "",
+      startingPrice: 0,
+      duration: 0,
+      decrementValue: 0,
     });
+    setErrorMessages({
+      name: "",
+      description: "",
+      image: "",
+      startingPrice: "",
+      auctionType: "",
+      duration: "",
+      decrementValue: "",
+      keyword1: "",
+      keyword2: "",
+      keyword3: "",
+    });
+    setDisplayErrorMessage("");
+  };
 
-    const [auctionImage, setAuctionImage] = useState<File | null>(null);
+  const convertDurationToEpoch = (hours: string) => {
+    const hoursInt = parseInt(hours);
+    const epoch = new Date().getTime();
+    const duration = hoursInt * 60 * 60 * 1000;
+    return epoch + duration;
+  };
 
-    const [formData, setFormData] = useState({
-        name: "",
-        description: "",
-        auctionType: "",
-        category1: "",
-        category2: "",
-        category3: "",
-        startingPrice: "", // only for forward auctions
-        duration: "", // only for dutch auctions
-        decrementValue: "", // only for dutch auctions
-    })
+  const handleSubmit = async () => {
+    if (validateForm()) {
+      setIsSubmitLoading(true);
+      let resp: any;
 
-    const [errorMessages, setErrorMessages] = useState({
-        name: "",
-        description: "",
-        startingPrice: "",
-        auctionType: "",
-        duration: "",
-        decrementValue: "",
-        category1: "",
-        category2: "",
-        category3: ""
-    })
-    const [displayErrorMessage, setDisplayErrorMessage] = useState<string>("")
+      try {
+        formData.duration = convertDurationToEpoch(String(formData?.duration));
 
+        resp = await createListing(formData);
+        // call to server to get auction item by id
+        // start the obtained auction
+        console.log("resp: ", resp);
 
-    const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false)
-    const [isSaveDraftLoading, setIsSaveDraftLoading] = useState<boolean>(false)
-
-    const findAuctionItem = (id: string) => {
-        const auction = auctions.find(auction => auction.id === id);
-        if (auction) {
-            setAuctionItem(auction);
-        }
-    }
-
-    useEffect(() => {
-        if ( typeof editAuctionId === "string") {
-            findAuctionItem(editAuctionId);
-        }
-    }, [editAuctionId]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-
-        // clear error message when user starts typing
-        setErrorMessages(prevState => ({
-            ...prevState,
-            [name]: ""
-        }));
-    }
-
-    const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-
-        // clear error message when user starts typing
-        setErrorMessages(prevState => ({
-            ...prevState,
-            [name]: ""
-        }));
-    }
-
-    const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
-
-        // clear error message when user starts typing
-        setErrorMessages(prevState => ({
-            ...prevState,
-            [name]: ""
-        }));
-
-        console.log(value);
-    }
-
-    const validateNumberInput = (input: string) => {
-        // check if input is a whole number greater than 0
-        const re = /^[1-9]\d*$/;
-        return re.test(input);
-    }
-
-    const validateForm = () => {
-        const newErrorMessages = {
-            name: formData.name === "" ? "Name is required" : "",
-            description: formData.description === "" ? "Description is required" : "",
-            auctionType: (formData.auctionType === "" || formData.auctionType === "Unset") ? "Auction Type is required" : "",
-            category1: (formData.category1 === "" || formData.category1 === "category") ? "Category 1 is required" : "",
-            category2: (formData.category2 === "" || formData.category2 ==="category" )? "Category 2 is required" : "",
-            category3: (formData.category3 === "" || formData.category3 === "category") ? "Category 3 is required" : "",
-            startingPrice: formData.auctionType === "Forward" ? formData.startingPrice === "" ? "Starting Price is required" : validateNumberInput(formData.startingPrice) ? "" :  "Starting Price must be a whole number greater than 0" : "",
-            decrementValue: formData.auctionType === "Dutch" ? formData.decrementValue === "" ? "Decrement Value is required" : validateNumberInput(formData.decrementValue) ? "" :  "Decrement Value must be a whole number greater than 0" : "",
-            duration: formData.auctionType === "Dutch" ? formData.duration === "" ? "Duration is required" : validateNumberInput(formData.duration) ? "" :  "Duration must be provided in hours and greater than 0" : "",
+        if (resp === undefined) {
+          alert("Something went wrong. Please try again later");
+          return;
         }
 
-        setErrorMessages(newErrorMessages);
+        if (resp.status === "failed") {
+          alert("Error creating listing. Please try again later.");
+          return;
+        }
+        setTimeout(async () => {
+          setIsSubmitLoading(true);
+          const listings = (await viewListing())?.data;
 
-        // check if there are any error messages
-        const anyErrors = Object.values(newErrorMessages).some((errorMessage) => errorMessage !== "");
-        if (anyErrors) {
-            // set display error message to first error message seen in the object
-            const firstErrorMessage = Object.values(newErrorMessages).find((errorMessage) => errorMessage !== "");
-            if (firstErrorMessage) {
-                setDisplayErrorMessage(firstErrorMessage);
-            }
+          const listing = listings.find(
+            (listing: any) => listing.name === formData.name.toLowerCase()
+          ) as ListingResponse;
+
+          if (listing === undefined) {
+            alert("Something went wrong starting auction. Please try again later");
+            return;
+          }
+
+          resp = await startAuction(listing.listing_item_id);
+
+          console.log("resp from start: ", resp);
+          if (resp === undefined) {
+            alert("Something went wrong. Please try again later");
+            return;
+          }
+          if (resp.status === "failed") {
+            alert("Error starting auction. Please try again later.");
+            return;
+          }
+
+          clearAllData();
+          setIsSubmitLoading(false);
+          // router.push(`/account/profile`);
+          window.location.href = `/account/profile`;
+        }, 2000);
+      } catch (error) {
+        console.log(error);
+        setDisplayErrorMessage("Server error occured. Please try again later");
+        setIsSubmitLoading(false);
+      } finally {
+        // setIsSubmitLoading(false);
+      }
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    if (validateForm()) {
+      setIsSaveDraftLoading(true);
+      let resp: any;
+
+      try {
+        formData.duration = convertDurationToEpoch(String(formData?.duration));
+        resp = await createListing(formData);
+        if (resp === undefined) {
+          alert("Something went wrong. Please try again later");
+          return;
         }
 
-        return !anyErrors;
-    }
-
-    const clearAllData = () => {
-        setFormData({
-            name: "",
-            description: "",
-            auctionType: "",
-            category1: "",
-            category2: "",
-            category3: "",
-            startingPrice: "",
-            duration: "", 
-            decrementValue: "", 
-        });
-        setErrorMessages({
-            name: "",
-            description: "",
-            startingPrice: "",
-            auctionType: "",
-            duration: "",
-            decrementValue: "",
-            category1: "",
-            category2: "",
-            category3: ""
-        });
-        setDisplayErrorMessage("");
-    }
-
-    // function to handle communication with backend
-    const handleCreateListingAttempt = () => {
-        clearAllData();
-
-        alert("Communication with server is yet to be integrated, but the Listing has been created! You will be redirected to your profile page in 5 seconds");
-
-        // redirect to login page
-        setTimeout(() => {
-            router.push(`/account/profile`)
-        }, 5000);
-
-    }
-
-    const handleSubmit = () => {
-        if (validateForm()) {
-            setIsSubmitLoading(true);
-            setTimeout(() => {
-                handleCreateListingAttempt();
-                setIsSubmitLoading(false);
-            }, 3000);
+        if (resp.status === "failed") {
+          alert("Error creating listing. Please try again later.");
+          return;
         }
+        setTimeout(async () => {
+          clearAllData();
+          // router.push(`/account/profile`);
+          window.location.href = `/account/profile`;
+          setIsSaveDraftLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.log(error);
+        setDisplayErrorMessage("Server error occured. Please try again later");
+        setIsSaveDraftLoading(false);
+      } finally {
+        // setIsSaveDraftLoading(false);
+      }
     }
+  };
 
-    const handleSaveDraft = () => {
-        if (validateForm()) {
-            setIsSaveDraftLoading(true);
-            setTimeout(() => {
-                handleCreateListingAttempt();
-                setIsSaveDraftLoading(false);
-            }, 3000);
-        }
-    }  
+  function submitImage(file: File, inputName?: string) {
+    setAuctionImage(file);
 
-    return (
-        <div className={inter.className}>
-            <Navbar />
-            <div className={styles.container}>
-                <h1>Create a Listing</h1>
-                <section className={styles.top_section}>
-                    <div className={styles.text_container}>
-                        <input type="text" name="name" placeholder="Add Title" className={`${styles.short_input} ${errorMessages.name && styles.error}`} value={auctionItem.name || formData.name} onChange={handleChange}/>
-                        {/* <input type="text" name="startingPrice" placeholder="Starting Bid Price" className={`${styles.short_input} ${errorMessages.startingPrice && styles.error}`} value={auctionItem.startingPrice || formData.startingPrice} onChange={handleChange}/>                         */}
-                        <textarea name="description" placeholder="Description" className={`${styles.description_input} ${errorMessages.description && styles.error}`} value={auctionItem.description || formData.description} onChange={handleTextAreaChange}/>
-                    </div>
-                    <div className={styles.image_container}>
-                        <div className={styles.image_placeholder} />
-                    </div>
-                </section>
-                <section className={styles.bottom_section}>
-                    <div className={styles.dropdown_container}>
-                        {/* TODO: UPDATE THE VALUE OF AUCTIONITEM WHEN THE DROPDOWN VALUE CHANGES */}
-                        <select name="category1" className={`${styles.dropdown} ${errorMessages.category1 && styles.error}`} value={formData.category1} onChange={handleDropdownChange}>
-                            <option value="category">Category 1</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="clothing">Clothing</option>
-                            <option value="furniture">Furniture</option>
-                            <option value="other">Other</option>
-                        </select>
-                        <select name="category2" className={`${styles.dropdown} ${errorMessages.category2 && styles.error}`} value={formData.category2} onChange={handleDropdownChange}>
-                            <option value="category">Category 2</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="clothing">Clothing</option>
-                            <option value="furniture">Furniture</option>
-                            <option value="other">Other</option>
-                        </select>
-                        <select name="category3" className={`${styles.dropdown} ${errorMessages.category3 && styles.error}`} value={formData.category3} onChange={handleDropdownChange}>
-                            <option value="category">Category 3</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="clothing">Clothing</option>
-                            <option value="furniture">Furniture</option>
-                            <option value="other">Other</option>
-                        </select>
-                        <select name="auctionType" className={`${styles.dropdown} ${errorMessages.auctionType && styles.error}`} value={formData.auctionType} onChange={handleDropdownChange}>
-                            <option value="Unset">Auction Type</option>
-                            <option value="Forward">Forward</option>
-                            <option value="Dutch">Dutch</option>
-                        </select>
+    setFormData((prevState) => ({
+      ...prevState,
+      ["image"]: file,
+    }));
+  }
+  return (
+    <div className={inter.className}>
+      <Navbar />
+      <div className={styles.container}>
+        <h1>Create a Listing</h1>
+        <section className={styles.top_section}>
+          <div className={styles.text_container}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Add Title"
+              className={`${styles.short_input} ${errorMessages.name && styles.error}`}
+              value={auctionItem.name || formData.name}
+              onChange={handleChange}
+            />
+            {/* <input type="text" name="startingPrice" placeholder="Starting Bid Price" className={`${styles.short_input} ${errorMessages.startingPrice && styles.error}`} value={auctionItem.startingPrice || formData.startingPrice} onChange={handleChange}/>                         */}
+            <textarea
+              name="description"
+              placeholder="Description"
+              className={`${styles.description_input} ${errorMessages.description && styles.error}`}
+              value={auctionItem.description || formData.description}
+              onChange={handleTextAreaChange}
+            />
+          </div>
+          <div className={`${styles.image_container} ${errorMessages.image && styles.error}`}>
+            {/* <div className={styles.image_placeholder} /> */}
+            <ImageUpload onSubmit={submitImage} inputName="featured" />
+          </div>
+        </section>
+        <section className={styles.bottom_section}>
+          <div className={styles.dropdown_container}>
+            <input
+              type="text"
+              name="keyword1"
+              placeholder="Keyword 1"
+              className={`${styles.short_input} ${errorMessages.name && styles.error}`}
+              value={formData.keyword1}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="keyword2"
+              placeholder="Keyword 2"
+              className={`${styles.short_input} ${errorMessages.name && styles.error}`}
+              value={formData.keyword2}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="keyword3"
+              placeholder="Keyword 3"
+              className={`${styles.short_input} ${errorMessages.name && styles.error}`}
+              value={formData.keyword3}
+              onChange={handleChange}
+            />
 
-                        {formData.auctionType === "Dutch" && <input type="text" name="duration" placeholder="Duration" className={`${styles.short_input} ${errorMessages.duration && styles.error}`} value={formData.duration} onChange={handleChange}/> }
-                        {formData.auctionType === "Dutch" && <input type="text" name="decrementValue" placeholder="Decrement Value" className={`${styles.short_input} ${errorMessages.decrementValue && styles.error}`} value={formData.decrementValue} onChange={handleChange}/> }
-                        {formData.auctionType === "Forward" && <input type="text" name="startingPrice" placeholder="Starting Bid Price" className={`${styles.short_input} ${errorMessages.startingPrice && styles.error}`} value={auctionItem.startingPrice || formData.startingPrice} onChange={handleChange}/> }                      
+            <select
+              name="auctionType"
+              className={`${styles.dropdown} ${errorMessages.auctionType && styles.error}`}
+              value={formData.auctionType}
+              onChange={handleDropdownChange}
+            >
+              <option value="Unset">Auction Type</option>
+              <option value="Forward">Forward</option>
+              <option value="Dutch">Dutch</option>
+            </select>
 
-                    </div>
+            <input
+              type="text"
+              name="duration"
+              placeholder="Duration (hours)"
+              className={`${styles.short_input} ${errorMessages.duration && styles.error}`}
+              value={formData.duration || ""}
+              onChange={handleChange}
+            />
+            {formData.auctionType === "Dutch" && (
+              <input
+                type="text"
+                name="decrementValue"
+                placeholder="Decrement Value"
+                className={`${styles.short_input} ${errorMessages.decrementValue && styles.error}`}
+                value={formData.decrementValue || ""}
+                onChange={handleChange}
+              />
+            )}
+            <input
+              type="text"
+              name="startingPrice"
+              placeholder="Starting Bid Price"
+              className={`${styles.short_input} ${errorMessages.startingPrice && styles.error}`}
+              value={formData.startingPrice || ""}
+              onChange={handleChange}
+            />
+          </div>
 
-                    <div className={`${styles.error_label} ${displayErrorMessage && styles.show_error}`}>{displayErrorMessage || "Please fix the errors and try again"}</div>
+          <div className={`${styles.error_label} ${displayErrorMessage && styles.show_error}`}>
+            {displayErrorMessage || "Please fix the errors and try again"}
+          </div>
 
-                    <div className={styles.button_container}>
-                        <AsyncButton isLoading={isSubmitLoading} onClick={handleSubmit} className={`${styles.upload_button} ${styles.active}`}>upload</AsyncButton>
-                        <AsyncButton isLoading={isSaveDraftLoading} onClick={handleSaveDraft} className={`${styles.save_button} ${styles.active}`}>save as draft</AsyncButton>
-                    </div>
-                </section>
-            </div>
-        </div>
-    );
-}
+          <div className={styles.button_container}>
+            <AsyncButton
+              isLoading={isSubmitLoading}
+              onClick={handleSubmit}
+              className={`${styles.upload_button} ${styles.active}`}
+            >
+              upload
+            </AsyncButton>
+            <AsyncButton
+              isLoading={isSaveDraftLoading}
+              onClick={handleSaveDraft}
+              className={`${styles.save_button} ${styles.active}`}
+            >
+              save as draft
+            </AsyncButton>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+};
 
 export default CreateListing;

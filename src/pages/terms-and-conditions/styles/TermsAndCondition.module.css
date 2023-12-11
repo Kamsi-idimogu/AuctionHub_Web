@@ -1,22 +1,24 @@
-.container{
-    max-width: 859px;
-    margin: 5rem auto 0;
-    padding-bottom: 10rem;
+.container {
+  max-width: 859px;
+  margin: 5rem auto 0;
+  padding-bottom: 10rem;
 }
 
-.container > h1{
-    font-size: 74px;
-    font-weight: 700;
-    margin-bottom: 1.6rem;
-    line-height: 1;
-    text-align: center;
+.container > h1 {
+  font-size: 74px;
+  font-weight: 700;
+  margin-bottom: 1.6rem;
+  line-height: 1;
+  text-align: center;
 }
 
-.container  p, .container li{
-    font-size: 26px;
+.container p,
+.container li,
+.table_item_subheading {
+  font-size: 26px;
 }
 
-.container  p{
-    font-weight: 400;
-    margin-bottom: 1.8rem;
+.container p {
+  font-weight: 400;
+  margin-bottom: 1.8rem;
 }

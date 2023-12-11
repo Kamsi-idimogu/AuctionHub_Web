@@ -8,12 +8,13 @@ interface ButtonProps {
     onClick: () => void;
     className?: string;
     style?: React.CSSProperties;
+    loadingSize?: number;
 }
 
-const AsyncButton = ({children, className, style, onClick, isLoading }:ButtonProps) => {
+const AsyncButton = ({children, className, style, onClick, isLoading, loadingSize }:ButtonProps) => {
     return (
         <nav onClick={onClick} style={style} className={`${default_style.btn} ${className}`}>
-            {isLoading ? <LoadingIndicator width={30} height={30}/> : children}
+            {isLoading ? <LoadingIndicator width={loadingSize || 30} height={loadingSize || 30}/> : children}
         </nav>
     )
 }
